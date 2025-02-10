@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perplexity AI Query</title>
+    <script>
+        async function sendQuery() {
+            const userQuery = document.getElementById("query").value;
+            if (!userQuery) {
+                alert("Please enter a query!");
+                return;
+            }
+
+            const response = await fetch("/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: userQuery })
+            });
+
+            const result = await response.json();
+            document.getElementById("response").innerText = result.choices ? result.choices[0].message.content : "No response from AI";
+        }
+    </script>
+</head>
+<body>
+    <h1>Ask Jun Sheng AI</h1>
+    <input type="text" id="query" placeholder="Enter your question..." />
+    <button onclick="sendQuery()">Submit</button>
+    <h2>Response:</h2>
+    <p id="response"></p>
+</body>
+</html>
