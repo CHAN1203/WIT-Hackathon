@@ -23,16 +23,12 @@ app.post("/chat", async (req, res) => {
             User's Preferred Timeframe: ${context.timeframe} weeks
 
             Based on this, recommend the best programming courses and create a structured learning timeline.
-            The response should include:
-            1. A list of courses with brief descriptions
-            2. A study plan split into weeks
-            3. Keep the response short and structured.
         `;
 
         const response = await axios.post(
             API_URL,
             {
-                model: "sonar-pro", // Optimized for structured responses
+                model: "sonar-pro",
                 messages: [
                     { role: "system", content: "You are a helpful AI that suggests learning paths based on user goals." },
                     { role: "user", content: prompt }
@@ -48,12 +44,19 @@ app.post("/chat", async (req, res) => {
             }
         );
 
-        res.json({ reply: response.data.choices?.[0]?.message?.content || "No response from AI" });
+        const botReply = response.data.choices?.[0]?.message?.content || "No response from AI";
+
+        // ✅ Print chatbot response to terminal
+        console.log("\n🤖 Chatbot Response:\n", botReply, "\n");
+
+        res.json({ reply: botReply });
+
     } catch (error) {
         console.error("Error:", error.response?.data || error.message);
         res.status(500).json({ error: error.response?.data || error.message });
     }
 });
+
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Chatbot running at http://localhost:${PORT}`));

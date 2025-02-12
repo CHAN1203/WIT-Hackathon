@@ -1,41 +1,3 @@
-const courses = {
-    "Data Analysis": {
-        Beginner: [
-            { name: "Intro to Data Analysis", duration: 2 },
-            { name: "Excel for Data Analysis", duration: 2 },
-            { name: "SQL Basics", duration: 2 }
-        ],
-        Intermediate: [
-            { name: "Python for Data Science", duration: 3 },
-            { name: "Advanced Excel Techniques", duration: 3 }
-        ],
-        Advanced: [
-            { name: "Machine Learning Fundamentals", duration: 4 },
-            { name: "Deep Dive into SQL", duration: 3 }
-        ],
-        Expert: [
-            { name: "Big Data Processing with Spark", duration: 5 },
-            { name: "Advanced Machine Learning", duration: 4 }
-        ]
-    },
-    "Web Development": {
-        Beginner: [
-            { name: "HTML & CSS Basics", duration: 2 },
-            { name: "JavaScript Fundamentals", duration: 3 }
-        ],
-        Intermediate: [
-            { name: "React.js Basics", duration: 4 },
-            { name: "Node.js and Express", duration: 4 }
-        ],
-        Advanced: [
-            { name: "Full-Stack Web Development", duration: 6 }
-        ],
-        Expert: [
-            { name: "Building Scalable Web Apps", duration: 5 }
-        ]
-    }
-};
-
 async function sendMessage() {
     const userInput = document.getElementById("userInput").value;
     if (!userInput.trim()) return;
@@ -119,7 +81,7 @@ function sendMessage() {
 
 function askSkillLevel() {
     addBotMessage(`
-        <span class="bot-text">I see! What is your proficiency level in ${userResponses.programmingObjective}? Please select one:</span>
+        <span class="bot-text">I see! What is your proficiency? Please select one:</span>
         <div class="button-container">
             <button onclick="selectSkillLevel('Beginner')">Beginner</button>
             <button onclick="selectSkillLevel('Intermediate')">Intermediate</button>
@@ -137,19 +99,36 @@ function selectSkillLevel(level) {
 
 function askTimeframe() {
     addBotMessage(`
-        <span class="bot-text">Great! How long do you plan to complete these courses?</span>
-        <div class="button-container">
-            <button onclick="selectTimeframe('4')">1 Month</button>
-            <button onclick="selectTimeframe('8')">2 Months</button>
-            <button onclick="selectTimeframe('12')">3 Months</button>
-        </div>
+        <span class="bot-text">
+            Great! How long do you plan to complete these courses? (Enter the number of weeks, e.g., "8 weeks")
+        </span>
     `);
 }
 
-function selectTimeframe(time) {
-    addUserMessage(`${time} weeks`);
-    userResponses.timeframe = time;
-    setTimeout(() => generateCoursePlan(), 1000);
+function sendMessage() {
+    const userInput = document.getElementById("userInput").value.trim();
+    if (!userInput) return;
+
+    addUserMessage(userInput);
+    document.getElementById("userInput").value = "";
+
+    // Check conversation stage
+    if (!userResponses.programmingObjective) {
+        userResponses.programmingObjective = userInput;
+        setTimeout(() => askSkillLevel(), 1000);
+    } else if (!userResponses.skillLevel) {
+        userResponses.skillLevel = userInput;
+        setTimeout(() => askTimeframe(), 1000);
+    } else if (!userResponses.timeframe) {
+        // Validate if user input is a number (for weeks)
+        const weeks = userInput.match(/\d+/); // Extract number from input
+        if (weeks) {
+            userResponses.timeframe = weeks[0]; // Store only the number of weeks
+            setTimeout(() => generateCoursePlan(), 1000);
+        } else {
+            addBotMessage("Please enter a valid number of weeks (e.g., '8 weeks').");
+        }
+    }
 }
 
 function generateCoursePlan() {
@@ -181,4 +160,27 @@ function addBotMessage(message) {
     botMessage.innerHTML = message;
     chatBox.appendChild(botMessage);
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function printChat() {
+    let chatContent = document.getElementById("chatBox").innerHTML;
+    let printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Chatbot Conversation</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .bot-message { background: #e0e0e0; padding: 10px; margin: 5px 0; border-radius: 5px; }
+                .user-message { background: #6a11cb; color: white; padding: 10px; margin: 5px 0; border-radius: 5px; text-align: right; }
+            </style>
+        </head>
+        <body>
+            <h2>Chatbot Conversation</h2>
+            ${chatContent}
+            <script>window.onload = function() { window.print(); }</script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 }
