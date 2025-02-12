@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        #chatOutput { margin-top: 20px; font-size: 18px; color: blue; }
+    </style>
+</head>
+<body>
+    <h2>Chatbot</h2>
+    <input type="text" id="userInput" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+    <p id="chatOutput"></p>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            const chatOutput = document.getElementById("chatOutput");
+    
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userInput })
+                });
+    
+                const data = await response.json();
+                console.log("Chatbot Response:", data); // Debug log
+    
+                if (data.reply) {
+                    chatOutput.innerText = "Bot: " + data.reply;
+                } else {
+                    chatOutput.innerText = "Bot: Error fetching response.";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                chatOutput.innerText = "Bot: Server error.";
+            }
+        }
+    </script>
+    
+</body>
+</html>
