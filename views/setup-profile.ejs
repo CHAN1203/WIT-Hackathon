@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Profile</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/styles/setup-profile.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+<div class="wrapper">
+  <form id="setup-profile-form" enctype="multipart/form-data">
+    <h2>Welcome, <%= username %>!<br> Let's Set Up Your Profile</h2>
+    
+    <!-- Full Name -->
+    <div class="input-box">
+      <input type="text" id="name" name="name" placeholder="Name" required>
+      <i class='bx bxs-user-detail'></i>
+    </div>
+    
+    <!-- Birthday -->
+    <div class="input-group">
+      <input type="date" id="birthday" name="birthday">
+    </div>
+      
+    <!-- Height -->
+    <div class="input-group">
+      <input type="number" id="height" name="height" placeholder="Enter your height (cm)">
+    </div>
+    
+    <!-- Weight -->
+    <div class="input-group">
+      <input type="number" id="weight" name="weight" placeholder="Enter your weight (kg)">
+    </div>
+    
+    <!-- Target Weight -->
+    <div class="input-group">
+      <input type="number" id="targetWeight" name="targetWeight" placeholder="Enter your target weight (kg)">
+    </div>
+    
+    <!-- Profile Picture -->
+    <div class="input-box">
+      <input type="file" id="pictureFile" name="pictureFile" accept="image/*" style="display: none;">
+      <label for="pictureFile" class="choose-button">Choose</label>
+    </div>
+
+    <!-- Profile Picture Preview Container -->
+    <div class="profile-pic-container">
+      <img id="profile-pic-preview" alt="Profile Picture Preview" />
+    </div>
+
+    <button type="submit" class="btn" id="saveProfileBtn">Save Profile</button>
+  </form>
+</div>
+</body>
+<script type="text/javascript">
+  $(document).ready(function() {
+      // Disable button if all fields are empty
+      function toggleSaveButton() {
+         let hasValue = false;
+         $('#setup-profile-form input').each(function() {
+             if ($(this).val()) {
+                 hasValue = true;
+                 return false; // Exit loop if any field has a value
+             }
+         });
+         $('#saveProfileBtn').prop('disabled', !hasValue);
+         $('#saveProfileBtn').css('cursor', 'not-allowed')
+      }
+
+      $('#pictureFile').change(function() {
+          previewImage(this);
+      });
+  });
+
+  //AJAX Request
+  document.getElementById("setup-profile-form").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
+      const formData = new FormData(this);
+      const userId = pathSegments[0];
+      const age = calculateAge(document.getElementById('birthday').value);
+      formData.append('age', age);
+
+      fetch(`/${userId}/setup-profile`, {
+          method: "PUT",
+          body: formData
+      })
+      .then(response => {
+          if (response.ok) {
+              // Redirect to /main on success
+              window.location.href = "/main";
+          } else {
+              alert("Error setting up profile");
+          }
+      })
+      .catch(error => {
+          console.error("Error:", error);
+          alert("Error setting up profile");
+      });
+  });
+
+  function calculateAge(birthday) {
+      const birthDate = new Date(birthday); // Create a Date object from the birthday
+      const today = new Date(); // Get the current date
+
+      let age = today.getFullYear() - birthDate.getFullYear(); // Calculate the difference in years
+      const monthDifference = today.getMonth() - birthDate.getMonth(); // Get the month difference
+
+      // If the current month is before the birth month or it's the same month but the current day is before the birth day, subtract 1 from age
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+
+      return age; // Return the calculated age
+  }
+
+  function previewImage(fileInput){
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+          $('#profile-pic-preview')
+          .attr('src', e.target.result)
+          .css('display', 'block');
+      };
+
+      reader.readAsDataURL(file);
+  }
+</script>
+</html>

@@ -1,0 +1,403 @@
+/* Overall Dark Theme */
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 6%;
+}
+
+.post-detail-container {
+    display: flex;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px
+}
+
+/* Center and style the image section */
+.post-detail-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    margin-right: 20px;
+}
+
+.post-detail-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Right Side: Info Section */
+.post-detail-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+}
+
+/* Header with User Info and Actions */
+.post-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.post-detail-user {
+    display: flex;
+    align-items: center;
+}
+
+.post-detail-user img {
+    width: 50px;      /* Adjust this value to your preferred size */
+    height: 50px;     /* Keep height and width the same for a circular image */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover;  /* Ensures the image scales correctly within the circle */
+    margin-right: 10px; /* Adds some space between the image and username */
+}
+
+.post-detail-actions button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.post-detail-info h2{
+    margin: 0;
+}
+
+.post-detail-info h4{
+    margin: 0;
+    color: #41A317;
+}
+
+/* Ingredients and Comments Sections */
+.post-detail-ingredients,
+.comments-section {
+    background-color: #333333;
+    height: 150px;  /* Adjust the height as needed */
+    overflow-y: auto;  /* Makes the section scrollable */
+    padding: 20px;
+    border-radius: 5px;
+    color: #ffffff;
+}
+
+.post-detail-ingredients ul,
+#commentsList {
+    list-style-type: none;
+}
+
+/* Close Button */
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 30px;
+}
+
+.close-button button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+}
+
+.comments-section h4 {
+    margin-bottom: 10px;
+}
+
+#addCommentForm {
+    display: flex;
+    gap: 10px;
+}
+
+#addCommentForm input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #444;
+    color: #ffffff;
+}
+
+#addCommentForm button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #41A317;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+#addCommentForm button:hover {
+    background-color: #41A317;
+}
+
+.comment:last-child {
+    border-bottom: none;
+}
+
+.comment-user {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.comment-text {
+    color: #b3b3b3;
+}
+
+/* Load More Button */
+#loadMoreComments {
+    background-color: #444;
+    color: #e6e6e6;
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+#loadMoreComments:hover {
+    background-color: #555;
+}
+
+/* General Styling for Post Detail Sections */
+.post-detail-info {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    margin-top: 10px;
+}
+
+/* Title Styling */
+.post-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+/* Description Styling */
+.post-description {
+    font-size: 1rem;
+    color: #b3b3b3;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    border-left: 4px solid #41A317;
+    padding-left: 10px;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* Total Calories Styling*/
+#total-calories {
+    background-color: #2a2a2a; 
+    padding: 10px;
+    padding-left: 0px;
+    border-radius: 6px;
+    margin-top: 10px;
+    color: #e0e0e0;
+    text-align: left;
+}
+
+#total-calories h4 {
+    margin: 0;
+    color: #41A317; 
+}
+
+/* Ingredients Section Styling */
+.post-detail-ingredients {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.post-detail-ingredients h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #41A317;
+    margin-bottom: 10px;
+}
+
+.post-detail-ingredients ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-detail-ingredients ul li {
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    color: #e0e0e0;
+}
+
+/* Like, Save, and Flag Actions */
+.post-detail-actions button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s;
+}
+
+.post-detail-actions button:hover {
+    color: #41A317;
+}
+#saveBtn.active {
+    color: #41A317; /* Or any other color to indicate saved */
+}
+
+#likeBtn.active {
+    color: #e33229; /* Red or any other color to indicate liked */
+}
+
+#likeBtn {
+    color: #ccc; /* Default color for not liked */
+}
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #222;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Report Form Styles */
+.form {
+    max-width: 100%;
+    padding: 20px;
+    background-color: rgb(40, 39, 39);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+h2 {
+    text-align: center;
+    color: #fff;
+}
+
+.violation_list {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background-color: rgb(40, 39, 39);
+    color: #fff;
+}
+
+.violation_list a {
+    color: white;
+    text-decoration: underline;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#hidden-dropdown {
+    display: none;
+    margin: auto;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;  /* Ensures button appears inline like an input */
+    text-align: center;  /* Aligns text properly inside the button */
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.form .quit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: auto;
+    float: right;
+}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnlyFoods</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+<div class="sidebar">
+    <a href="/main" style="text-decoration: none; color: inherit">
+        <h2 class="logo">
+        <span class="logo-o">O</span><span class="logo-nly">nly</span><span class="logo-foods">Foods</span>
+        </h2>
+    </a>
+    <a href="#" class="sidebar-btn add-btn" id="addPostBtn">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add</span>
+    </a>
+    <a class="sidebar-btn" id="searchBarToggle">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+    </a>
+    <!-- Search Bar (Initially hidden) -->
+    <div id="searchBar" style="display: none;">
+        <input type="text" id="searchInput" placeholder="Search for recipes...">
+    </div>
+    <a href="/notifications" class="sidebar-btn">
+        <i class="fa-solid fa-bell"></i>
+        <span>Notifications</span>
+    </a>
+    <a href="/profile" class="sidebar-btn">
+        <i class="fa-solid fa-user"></i>
+        <span>Profile</span>
+    </a>
+    <a href="/settings" class="sidebar-btn">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+    </a>
+    <a href="/logout" class="sidebar-btn" onclick="return confirmLogout(event)">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+    </a>
+</div>
+
+  <div class="main-content">
+    <div class="meal-filter">
+        <button class="category active" onclick="filterByCategory('all', this)" data-category="All">All</button>
+        <button class="category" onclick="filterByCategory('Breakfast', this)" data-category="Breakfast">Breakfast</button>
+        <button class="category" onclick="filterByCategory('Lunch', this)" data-category="Lunch">Lunch</button>
+        <button class="category" onclick="filterByCategory('Dinner', this)" data-category="Dinner">Dinner</button>
+        <button class="category" onclick="filterByCategory('Snacks', this)" data-category="Snacks">Snacks</button>
+        <button class="category" onclick="filterByCategory('Others', this)" data-category="Others">Others</button>
+    </div>
+    
+
+    <div class="posts-container" id="postsContainer">
+        <% posts.forEach(post => { %>
+            <div class="post" onclick="window.location.href='/post/<%= post.id %>'" data-category="<%= post.category %>">
+                <img src="<%= post.image %>" alt="<%= post.title %>"> <!-- Use signed URL for image -->
+                <div class="post-content">
+                    <h3 class="post-title"><%= post.title %></h3>
+                    <p class="post-category"><strong>Category:</strong>  <%= post.category %></p>
+                    <p class="post-calories"><strong>Total Calories:</strong> <%= post.calories %> cal</p>
+                </div>
+            </div>
+        <% }); %>
+      </div>
+      
+  
+
+    <div id="addPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAddPostModal">&times;</span>
+            <h2>Add New Recipe</h2>
+            <form id="addPostForm" action = "/main" method="POST" enctype="multipart/form-data">
+                <input type="text" id="recipeTitle" name="title" placeholder="Recipe Title" required>
+                <textarea id="recipeDescription" name="description" placeholder="Recipe Description" required></textarea>
+                
+                <select id="recipeCategory" name="category" required>
+                  <option value="">Select a category</option>
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snacks">Snacks</option>
+                </select>
+                <label for="ingredient-search">Search for an ingredient:</label>
+                <input type="text" id="ingredient-search" placeholder="Type ingredient name" autocomplete="off">
+                <ul id="ingredient-suggestions"></ul> <!-- Search results suggestions -->
+
+                <label for="quantity">Quantity (in grams):</label>
+                <input type="number" id="quantity" name="quantity" placeholder="Enter quantity in grams" min="1">
+
+                <button id="addIngredientBtn" type="submit">Add Ingredient</button>
+                <div id="nutrition-info">
+                  <h2>Selected Ingredients</h2>
+                  <ul id="ingredient-list" name = "ingredient"></ul>
+                  <p id="total-calories">Total Calories: 0</p>
+                </div>
+
+                <input type="file" id="recipeImage" name="recipeImage" accept="image/*" required>
+                <button id="postRecipeBtn" type="submit">Post Recipe</button>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <script src="/script/search.js"></script>
+
+  <script>
+    function confirmLogout(event) {
+        const confirmation = confirm("Are you sure you want to log out?");
+        if (!confirmation) {
+            // Prevent the default action (navigation) if the user cancels
+            event.preventDefault();
+        }
+        return confirmation; // Only returns true if user confirms
+    }
+
+    // Filter posts by category
+    function filterByCategory(category, button) {
+    const posts = document.querySelectorAll('.post');
+    const buttons = document.querySelectorAll('.meal-filter .category');
+
+    // Update button styling
+    buttons.forEach(button => button.classList.remove('active'));
+    // Mark the clicked button as active
+    button.classList.add('active');
+
+    // Log categories for debugging
+    console.log('Selected Category:', category);
+
+    // Display or hide posts based on the selected category
+    posts.forEach(post => {
+        const postCategory = post.getAttribute('data-category'); // Get category from data-category attribute
+        console.log('Post Category:', postCategory); // Debug log to verify category values
+
+        // Ensure category comparison is correct, and adjust if necessary
+        if (category.toLowerCase() === 'all' || postCategory.toLowerCase() === category.toLowerCase()) {
+            post.style.display = 'block'; // Show matching post
+        } else {
+            post.style.display = 'none'; // Hide non-matching post
+        }
+    });
+    }
+
+    // Modal functionality
+    const addPostModal = document.getElementById("addPostModal");
+    const addBtn = document.getElementById("addPostBtn");
+    const closeAddPostModalBtn = document.getElementById("closeAddPostModal");
+    const postRecipeBtn = document.getElementById('postRecipeBtn');
+
+
+    addBtn.onclick = function() {
+        addPostModal.style.display = "block";
+    }
+
+   
+    closeAddPostModalBtn.onclick = function() {
+        addPostModal.style.display = "none";
+        addPostForm.reset();
+        document.getElementById('ingredient-list').innerHTML = ''; // Clear all ingredients
+        const resetTotalCalories = 0; // Reset total calories
+        document.getElementById('total-calories').textContent = `Total Calories: ${resetTotalCalories}`;
+    }
+    
+
+    window.onclick = function(event) {
+        if (event.target == addPostModal) {
+            addPostModal.style.display = "none";
+            addPostForm.reset();
+            document.getElementById('ingredient-list').innerHTML = ''; // Clear all ingredients
+            const resetTotalCalories = 0; // Reset total calories
+            document.getElementById('total-calories').textContent = `Total Calories: ${resetTotalCalories}`;
+        }
+    }
+
+    // Handle form submission
+    const addPostForm = document.getElementById('addPostForm');
+    document.getElementById("postRecipeBtn").addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('recipeTitle').value;
+        const description = document.getElementById('recipeDescription').value;
+        const category = document.getElementById('recipeCategory').value;
+        const imageFile = document.getElementById('recipeImage').files[0];
+        const ingredientList = document.getElementById('ingredient-list');
+        const totalCaloriesElem = document.getElementById('total-calories');
+        const selectedIngredients = Array.from(document.querySelectorAll('#ingredient-list li'))
+        .map(li => {
+            return {
+                name: li.textContent.split(' - ')[0], // Get ingredient name
+                quantity: parseInt(li.textContent.match(/\((\d+)g\)/)[1]), // Get quantity in grams
+                calories: parseFloat(li.textContent.match(/- (\d+(\.\d+)?) kcal/)[1]) // Get calories
+            };
+        });
+
+        const totalCaloriesText = totalCaloriesElem.textContent;
+        const totalCalories = parseInt(totalCaloriesText.match(/\d+/)[0]);
+
+        if (!title || !description || !category || !imageFile || selectedIngredients.length === 0) {
+            alert("Please fill in all fields before submitting.");
+            return; // Stop form submission
+    }
+
+        const formData = new FormData(addPostForm);
+        formData.set('ingredients', JSON.stringify(selectedIngredients)); // Add serialized ingredients
+        formData.set('calories', totalCalories);
+
+        try {
+          const response = await fetch("/addPost", {
+              method: "POST",
+              body: formData,
+          });
+
+          if (!response.ok) {
+              throw new Error("Failed to add post");
+          }
+
+          const result = await response.json();
+          console.log("Post added successfully", result);
+
+          // Optional: Fetch the updated list of posts or add the new post to the DOM
+
+          // Close the modal, reset the form, and clear ingredient history
+          
+          addPostModal.style.display = "none";
+          addPostForm.reset();
+          ingredientList.innerHTML = ''; // Clear all ingredients
+          const resetTotalCalories = 0; // Reset total calories
+          totalCaloriesElem.textContent = `Total Calories: ${resetTotalCalories}`;
+          location.reload();
+      } catch (error) {
+          console.error("Error:", error);
+      }
+    });
+    
+    /*Connect to nutrinix api; Handle add ingredient button and Submit post button*/
+    document.addEventListener("DOMContentLoaded", function () {
+        const apiKey = '85ef1ec3b7810ef681a05aef6e9e72d3'; // Replace with your actual API key
+        const appId = 'ff698b8c';   // Replace with your actual App ID
+        const apiUrl = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
+        const searchUrl = 'https://trackapi.nutritionix.com/v2/search/instant?query=';
+        const searchInput = document.getElementById('ingredient-search');
+        const suggestions = document.getElementById('ingredient-suggestions');
+        const ingredientForm = document.getElementById('ingredient-form');
+        const ingredientList = document.getElementById('ingredient-list');
+        const totalCaloriesElem = document.getElementById('total-calories');
+        const addIngredientBtn = document.getElementById('addIngredientBtn'); // Make sure this ID exists in your HTML
+        let totalCalories = 0;
+
+        // Search for ingredients as the user types
+        searchInput.addEventListener('input', async function () {
+            const query = searchInput.value.trim();
+
+            if (query.length === 0) {
+                suggestions.innerHTML = ''; // Clear suggestions if input is empty
+                return;
+            }
+
+            try {
+                const response = await fetch(`${searchUrl}${query}`, {
+                    headers: {
+                        'x-app-id': appId,
+                        'x-app-key': apiKey
+                    }
+                });
+
+                const data = await response.json();
+                const foodList = data.common; // Assuming you want common food items
+
+                // Clear previous suggestions
+                suggestions.innerHTML = '';
+
+                // Populate suggestions based on search
+                foodList.forEach(food => {
+                    const li = document.createElement('li');
+                    li.textContent = food.food_name;
+                    li.dataset.foodName = food.food_name;
+                    suggestions.appendChild(li);
+                });
+
+                // Add click event to suggestion items
+                suggestions.querySelectorAll('li').forEach(item => {
+                    item.addEventListener('click', function () {
+                        searchInput.value = item.dataset.foodName;
+                        suggestions.innerHTML = ''; // Clear suggestions after selecting
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error fetching ingredient data:', error);
+            }
+        });
+
+        const ingredientInputs = [];
+
+        // Handle form submission to add ingredient
+        addIngredientBtn.addEventListener('click', async function (event) {  // Button functionality
+            event.preventDefault();
+            const selectedIngredient = searchInput.value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (!selectedIngredient || isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid ingredient and quantity.');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-app-id': appId,
+                        'x-app-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        query: `${quantity} grams of ${selectedIngredient}`
+                    })
+                });
+
+                const data = await response.json();
+                const ingredient = data.foods[0]; // Assuming the first match is the correct ingredient
+
+
+                // Display the ingredient and its calories
+                const listItem = document.createElement('li');
+                listItem.textContent = `${ingredient.food_name} (${quantity}g) - ${ingredient.nf_calories} kcal`;
+
+                // Create the remove button for each ingredient
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.className = "remove-ingredient";
+                removeButton.style.marginLeft = "10px";
+                
+                // Append the remove button to the ingredient item
+                listItem.appendChild(removeButton);
+
+                ingredientList.appendChild(listItem);
+                ingredientInputs.push({ ingredient: ingredient.food_name, quantity: quantity});
+
+                // Reset input fields
+                searchInput.value = "";
+                document.getElementById('quantity').value = "";
+
+                // Event listener for the remove button
+                removeButton.addEventListener("click", function() {
+                    listItem.remove(); // Remove ingredient from list
+                    totalCalories -= ingredient.nf_calories;
+                    totalCaloriesElem.textContent = `Total Calories: ${totalCalories}`;
+                });
+
+                // Update total calories
+                totalCalories += ingredient.nf_calories;
+                totalCaloriesElem.textContent = `Total Calories: ${totalCalories}`;
+
+            } catch (error) {
+                console.error('Error fetching nutrition data:', error);
+            }
+        });
+    });
+
+  </script>
+</body>
+
+</html>
