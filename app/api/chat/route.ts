@@ -1,7 +1,8 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { getChatResponse } from "@/lib/perplexity"
+
+const FLASK_API_URL = process.env.FLASK_API_URL || "http://localhost:5000"
 
 export async function POST(request: Request) {
   try {
@@ -12,27 +13,51 @@ export async function POST(request: Request) {
     const {
       data: { session },
     } = await supabase.auth.getSession()
+
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { message, context } = await request.json()
+    const { title, content } = await request.json()
 
-    // Get response from Perplexity
-    const reply = await getChatResponse(message, context)
-
-    // Store chat history
-    await supabase.from("chat_history").insert({
-      user_id: session.user.id,
-      message,
-      response: reply,
-      context: context || {},
+    // Call Flask API for content moderation
+    const moderationResponse = await fetch(`${FLASK_API_URL}/api/detect-cyberbullying`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: content }),
     })
 
-    return NextResponse.json({ reply })
+    if (!moderationResponse.ok) {
+      throw new Error("Failed to moderate content")
+    }
+
+    const moderationData = await moderationResponse.json()
+
+    // Insert post with moderation results
+    const { data: post, error: insertError } = await supabase
+      .from("forum_posts")
+      .insert({
+        title,
+        content,
+        author_id: session.user.id,
+        moderation_status: moderationData.isSafe ? "approved" : "rejected",
+        moderation_confidence: moderationData.confidence,
+        moderation_message: moderationData.message,
+      })
+      .select()
+      .single()
+
+    if (insertError) throw insertError
+
+    return NextResponse.json({
+      post,
+      moderation: moderationData,
+    })
   } catch (error) {
-    console.error("Chat API Error:", error)
-    return new NextResponse("Internal Server Error", { status: 500 })
+    console.error("Content moderation error:", error)
+    return NextResponse.json({ error: "Failed to process content" }, { status: 500 })
   }
 }
 

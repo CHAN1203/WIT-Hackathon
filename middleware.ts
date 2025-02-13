@@ -6,27 +6,31 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
 
-  // Refresh session if expired
+  // Use getUser() instead of getSession() for secure authentication
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  console.log("Current URL:", req.nextUrl.pathname)
-  console.log("Session exists:", !!session)
-  console.log("Session data:", session) // Additional debug log
-
-  // If no session and trying to access protected routes
-  if (!session && (req.nextUrl.pathname.startsWith("/dashboard") || req.nextUrl.pathname.startsWith("/onboarding"))) {
-    const redirectUrl = new URL("/auth/login", req.url)
-    console.log("Redirecting to:", redirectUrl.toString())
-    return NextResponse.redirect(redirectUrl)
+  // If no authenticated user and trying to access protected routes
+  if (!user || error) {
+    if (
+      req.nextUrl.pathname.startsWith("/home") ||
+      req.nextUrl.pathname.startsWith("/dashboard") ||
+      req.nextUrl.pathname.startsWith("/forum") ||
+      req.nextUrl.pathname.startsWith("/profile") ||
+      req.nextUrl.pathname.startsWith("/project") ||
+      req.nextUrl.pathname.startsWith("/onboarding")
+    ) {
+      return NextResponse.redirect(new URL("/auth/login", req.url))
+    }
   }
 
-  // If session exists and trying to access auth pages
-  if (session && (req.nextUrl.pathname.startsWith("/auth/login") || req.nextUrl.pathname.startsWith("/auth/signup"))) {
-    const redirectUrl = new URL("/dashboard", req.url)
-    console.log("Redirecting to:", redirectUrl.toString())
-    return NextResponse.redirect(redirectUrl)
+  // If authenticated user trying to access auth pages
+  if (user && !error) {
+    if (req.nextUrl.pathname.startsWith("/auth/login") || req.nextUrl.pathname.startsWith("/auth/signup")) {
+      return NextResponse.redirect(new URL("/dashboard", req.url))
+    }
   }
 
   return res

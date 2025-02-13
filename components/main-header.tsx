@@ -1,19 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { LogOut } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { LogOut, LayoutDashboard, FolderKanban, MessageCircle, User2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useRouter } from "next/navigation"
 
 export function MainHeader() {
-  const router = useRouter()
+  const pathname = usePathname()
 
   const handleSignOut = async () => {
     try {
       const supabase = createClientComponentClient()
       await supabase.auth.signOut()
-      // Force a hard navigation after sign out
       window.location.href = "/auth/login"
     } catch (error) {
       console.error("Error signing out:", error)
@@ -28,21 +27,45 @@ export function MainHeader() {
             Zaneta
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/dashboard" className="font-medium text-gray-600 hover:text-primary">
+            <Link
+              href="/dashboard"
+              className={`flex items-center gap-2 font-medium hover:text-primary ${
+                pathname === "/dashboard" ? "text-primary" : "text-gray-600"
+              }`}
+            >
+              <LayoutDashboard className="h-5 w-5" />
               Dashboard
             </Link>
-            <Link href="/project" className="font-medium text-gray-600 hover:text-primary">
+            <Link
+              href="/project"
+              className={`flex items-center gap-2 font-medium hover:text-primary ${
+                pathname === "/project" ? "text-primary" : "text-gray-600"
+              }`}
+            >
+              <FolderKanban className="h-5 w-5" />
               Project
             </Link>
-            <Link href="/forum" className="font-medium text-gray-600 hover:text-primary">
+            <Link
+              href="/forum"
+              className={`flex items-center gap-2 font-medium hover:text-primary ${
+                pathname === "/forum" ? "text-primary" : "text-gray-600"
+              }`}
+            >
+              <MessageCircle className="h-5 w-5" />
               Forum
             </Link>
-            <Link href="/profile" className="font-medium text-gray-600 hover:text-primary">
+            <Link
+              href="/profile"
+              className={`flex items-center gap-2 font-medium hover:text-primary ${
+                pathname === "/profile" ? "text-primary" : "text-gray-600"
+              }`}
+            >
+              <User2 className="h-5 w-5" />
               Profile
             </Link>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} className="hover:bg-gray-100">
+            <Button variant="ghost" onClick={handleSignOut} className="flex items-center gap-2 hover:bg-gray-100">
               <LogOut className="h-5 w-5" />
-              <span className="sr-only">Log out</span>
+              Log Out
             </Button>
           </nav>
         </div>

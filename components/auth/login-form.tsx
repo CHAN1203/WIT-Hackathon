@@ -43,9 +43,7 @@ export function LoginForm() {
 
       if (data?.user) {
         console.log("Login successful, redirecting...")
-        // Use router.refresh() to update server components
         router.refresh()
-        // Force a hard navigation to dashboard
         window.location.href = "/dashboard"
       }
     } catch (err) {
