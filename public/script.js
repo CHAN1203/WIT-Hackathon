@@ -40,7 +40,7 @@ async function sendMessage() {
                 userResponses.timeframe = weeks[0];
                 setTimeout(() => generateCoursePlan(), 1000);
             } else {
-                botMessage.innerText = "Please enter a valid number of weeks (e.g., '8 weeks').";
+                botMessage.innerText = "Please enter a valid number of weeks (e.g. '8').";
             }
         }
 
@@ -97,7 +97,7 @@ function sendMessage() {
 
 function askSkillLevel() {
     // First bot message (question)
-    addBotMessage(`<span class="bot-text">I see! What is your proficiency level in XXXXXX?</span>`);
+    addBotMessage(`<span class="bot-text">I see! What is your proficiency level?</span>`);
 
     // Delay to show the next message separately
     setTimeout(() => {

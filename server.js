@@ -3,6 +3,7 @@ const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const path = require("path");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 app.use(express.json());
@@ -12,12 +13,59 @@ app.use(express.static(path.join(__dirname, "public")));
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
 const API_URL = "https://api.perplexity.ai/chat/completions";
 
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Function to extract courses and durations
+function extractCoursesAndDurations(text) {
+    const courseRegex = /["'](.*?)["']/g;  // Matches text inside quotes
+    const durationRegex = /\[(.*?)\]/g;   // Matches text inside square brackets
+
+    let courses = [];
+    let durations = [];
+
+    let match;
+    
+    // Extract courses
+    while ((match = courseRegex.exec(text)) !== null) {
+        courses.push(match[1]);
+    }
+
+    // Extract durations
+    while ((match = durationRegex.exec(text)) !== null) {
+        durations.push(match[1]);
+    }
+
+    return { courses, durations };
+}
+
+// Function to store courses in Supabase
+async function storeCoursesInSupabase(courses, durations) {
+
+    let courseEntries = courses.map((course, index) => ({
+        course_name: course,
+        duration: durations[index]
+    }));
+
+    // Insert data into Supabase
+    const { data, error } = await supabase.from("courses").insert(courseEntries);
+
+    if (error) {
+        console.error("Error inserting courses into Supabase:", error);
+        return false;
+    }
+
+    console.log("✅ Courses successfully stored in Supabase:", data);
+    return true;
+}
+
 app.post("/chat", async (req, res) => {
     try {
         const { message, context, validateOnly } = req.body;
 
         if (validateOnly) {
-            // Validation Request: Ask AI if input is meaningful
             const validationPrompt = `Does this message make sense in the context of learning programming? 
                 Respond with "Valid" if yes, or "Invalid" if not.
                 Message: "${message}"`;
@@ -46,12 +94,14 @@ app.post("/chat", async (req, res) => {
             return res.json({ validation: aiValidation.includes("Valid") ? "Valid" : "Invalid" });
         }
 
-        // Regular AI Response (Proceeding with chat)
+        // Generate Course Recommendations
         const prompt = `
             User's Learning Objective: ${context.programmingObjective}
             User's Skill Level: ${context.skillLevel}
             User's Preferred Timeframe: ${context.timeframe} weeks
-            Based on this, recommend the best programming courses and create a structured learning timeline.
+            Based on this, recommend 3 to 5 Coursera courses within the user's timeframe.
+            Always quote the course names, and bracket the duration.
+            Answer directly.
         `;
 
         const response = await axios.post(
@@ -77,7 +127,14 @@ app.post("/chat", async (req, res) => {
 
         console.log("\n🤖 Chatbot Response:\n", botReply, "\n");
 
-        res.json({ reply: botReply });
+        // Extract courses and durations
+        const { courses, durations } = extractCoursesAndDurations(botReply);
+
+        console.log(courses,durations);
+        // Store in Supabase
+        const success = await storeCoursesInSupabase(courses, durations);
+
+        res.json({ reply: botReply, courses, durations, stored: success });
 
     } catch (error) {
         console.error("Error:", error.response?.data || error.message);
