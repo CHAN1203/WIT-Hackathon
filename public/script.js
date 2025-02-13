@@ -1,50 +1,67 @@
 async function sendMessage() {
-    const userInput = document.getElementById("userInput").value;
-    if (!userInput.trim()) return;
+    const userInput = document.getElementById("userInput").value.trim();
+    if (!userInput) return;
 
-    const chatBox = document.getElementById("chatBox");
-
-    // Add User Message
-    const userMessage = document.createElement("div");
-    userMessage.classList.add("user-message");
-    userMessage.innerText = userInput;
-    chatBox.appendChild(userMessage);
-
-    // Scroll to Bottom
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Clear Input
+    addUserMessage(userInput);
     document.getElementById("userInput").value = "";
 
-    // Show Bot Thinking
+    // Show bot thinking message
     const botMessage = document.createElement("div");
     botMessage.classList.add("bot-message");
     botMessage.innerText = "Thinking...";
-    chatBox.appendChild(botMessage);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Send Request to Server
+    document.getElementById("chatBox").appendChild(botMessage);
+    
     try {
-        const response = await fetch("/chat", {
+        // Step 1: Validate User Input
+        const validationResponse = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userInput })
+            body: JSON.stringify({ message: userInput, validateOnly: true })
         });
 
-        const data = await response.json();
-        botMessage.innerText = data.reply || "I couldn't understand that.";
+        const validationData = await validationResponse.json();
+        const isValid = validationData.validation === "Valid";
 
-        chatBox.scrollTop = chatBox.scrollHeight;
+        if (!isValid) {
+            botMessage.innerText = "I didn't understand that. Could you please rephrase your response?";
+            return;
+        }
+
+        // Step 2: Proceed with Conversation
+        if (!userResponses.programmingObjective) {
+            userResponses.programmingObjective = userInput;
+            setTimeout(() => askSkillLevel(), 1000);
+        } else if (!userResponses.skillLevel) {
+            userResponses.skillLevel = userInput;
+            setTimeout(() => askTimeframe(), 1000);
+        } else if (!userResponses.timeframe) {
+            const weeks = userInput.match(/\d+/);
+            if (weeks) {
+                userResponses.timeframe = weeks[0];
+                setTimeout(() => generateCoursePlan(), 1000);
+            } else {
+                botMessage.innerText = "Please enter a valid number of weeks (e.g., '8 weeks').";
+            }
+        }
+
     } catch (error) {
         botMessage.innerText = "Error: Unable to connect to server.";
     }
 }
 
+
+// Listen for Enter key in input field
+document.getElementById("userInput").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault(); // Prevent default form submission behavior
+        sendMessage(); // Trigger message sending
+    }
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const chatBox = document.getElementById("chatBox");
 
     addBotMessage(`
-        <span class="bot-icon">🤖</span> 
         <span class="bot-text">
             Hello, I am Zaneta! I will ask a few questions to get to know you better so that I can understand your goals and recommend courses and create a personalized schedule!<br><br>
             May I know what do you wish to achieve from learning programming?
@@ -80,16 +97,22 @@ function sendMessage() {
 }
 
 function askSkillLevel() {
-    addBotMessage(`
-        <span class="bot-text">I see! What is your proficiency? Please select one:</span>
-        <div class="button-container">
-            <button onclick="selectSkillLevel('Beginner')">Beginner</button>
-            <button onclick="selectSkillLevel('Intermediate')">Intermediate</button>
-            <button onclick="selectSkillLevel('Advanced')">Advanced</button>
-            <button onclick="selectSkillLevel('Expert')">Expert</button>
-        </div>
-    `);
+    // First bot message (question)
+    addBotMessage(`<span class="bot-text">I see! What is your proficiency level in XXXXXX?</span>`);
+
+    // Delay to show the next message separately
+    setTimeout(() => {
+        addBotMessage(`
+            <div class="button-container">
+                <button onclick="selectSkillLevel('Beginner')">Beginner</button>
+                <button onclick="selectSkillLevel('Intermediate')">Intermediate</button>
+                <button onclick="selectSkillLevel('Advanced')">Advanced</button>
+                <button onclick="selectSkillLevel('Expert')">Expert</button>
+            </div>
+        `);
+    }, 1000); // 1-second delay for better UX
 }
+
 
 function selectSkillLevel(level) {
     addUserMessage(level);
@@ -162,25 +185,3 @@ function addBotMessage(message) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function printChat() {
-    let chatContent = document.getElementById("chatBox").innerHTML;
-    let printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Chatbot Conversation</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                .bot-message { background: #e0e0e0; padding: 10px; margin: 5px 0; border-radius: 5px; }
-                .user-message { background: #6a11cb; color: white; padding: 10px; margin: 5px 0; border-radius: 5px; text-align: right; }
-            </style>
-        </head>
-        <body>
-            <h2>Chatbot Conversation</h2>
-            ${chatContent}
-            <script>window.onload = function() { window.print(); }</script>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-}

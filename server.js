@@ -14,14 +14,43 @@ const API_URL = "https://api.perplexity.ai/chat/completions";
 
 app.post("/chat", async (req, res) => {
     try {
-        const { message, context } = req.body;
+        const { message, context, validateOnly } = req.body;
 
-        // Construct AI Prompt Using User Data
+        if (validateOnly) {
+            // Validation Request: Ask AI if input is meaningful
+            const validationPrompt = `Does this message make sense in the context of learning programming? 
+                Respond with "Valid" if yes, or "Invalid" if not.
+                Message: "${message}"`;
+
+            const validationResponse = await axios.post(
+                API_URL,
+                {
+                    model: "sonar-pro",
+                    messages: [
+                        { role: "system", content: "You are an AI that checks if a user input makes sense." },
+                        { role: "user", content: validationPrompt }
+                    ],
+                    temperature: 0.5,
+                    max_tokens: 50
+                },
+                {
+                    headers: {
+                        "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            const aiValidation = validationResponse.data.choices?.[0]?.message?.content.trim() || "Invalid";
+
+            return res.json({ validation: aiValidation.includes("Valid") ? "Valid" : "Invalid" });
+        }
+
+        // Regular AI Response (Proceeding with chat)
         const prompt = `
             User's Learning Objective: ${context.programmingObjective}
             User's Skill Level: ${context.skillLevel}
             User's Preferred Timeframe: ${context.timeframe} weeks
-
             Based on this, recommend the best programming courses and create a structured learning timeline.
         `;
 
@@ -46,7 +75,6 @@ app.post("/chat", async (req, res) => {
 
         const botReply = response.data.choices?.[0]?.message?.content || "No response from AI";
 
-        // ✅ Print chatbot response to terminal
         console.log("\n🤖 Chatbot Response:\n", botReply, "\n");
 
         res.json({ reply: botReply });
@@ -56,7 +84,6 @@ app.post("/chat", async (req, res) => {
         res.status(500).json({ error: error.response?.data || error.message });
     }
 });
-
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Chatbot running at http://localhost:${PORT}`));
