@@ -1,21 +1,44 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Button } from "../components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Check, Lock } from "lucide-react"
 
-const goals = [
-  { id: 1, name: "Python Programming", completed: true },
-  { id: 2, name: "Exploratory Data Analysis", completed: true },
-  { id: 3, name: "Machine Learning", completed: false },
-]
+type Preferences = {
+  programming_objective: string
+  skill_level: string
+  timeframe_weeks: number
+}
 
-export function GoalSection() {
+export function GoalSection({ initialPreferences }: { initialPreferences?: Preferences }) {
+  const goals = [
+    {
+      id: 1,
+      name: "Python Programming",
+      completed: true,
+    },
+    {
+      id: 2,
+      name: "Exploratory Data Analysis",
+      completed: true,
+    },
+    {
+      id: 3,
+      name: "Machine Learning",
+      completed: false,
+    },
+  ]
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>GOAL:</CardTitle>
-        <p className="text-sm text-muted-foreground">To be proficient in data analysis</p>
+        <p className="text-sm text-muted-foreground">
+          {initialPreferences?.programming_objective || "To be proficient in data analysis"}
+        </p>
+        {initialPreferences?.timeframe_weeks && (
+          <p className="text-sm text-muted-foreground">Timeline: {initialPreferences.timeframe_weeks} weeks</p>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {goals.map((goal) => (

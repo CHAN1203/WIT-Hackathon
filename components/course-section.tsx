@@ -1,33 +1,54 @@
 "use client"
 
-import { Card, CardContent } from "../components/ui/card"
-import { Button } from "../components/ui/button"
+import { useEffect, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/components/auth-provider"
 
-const courses = [
-  {
-    id: 1,
-    title: "Python Programming",
-    image: "/placeholder.svg?height=200&width=150",
-    completed: true,
-  },
-  {
-    id: 2,
-    title: "Exploratory Data Analysis",
-    image: "/placeholder.svg?height=200&width=150",
-    completed: true,
-  },
-  {
-    id: 3,
-    title: "Machine Learning",
-    image: "/placeholder.svg?height=200&width=150",
-    completed: false,
-  },
-]
+type Course = {
+  id: string
+  course_name: string
+  progress: number
+  completed: boolean
+}
 
-export function CourseSection() {
+export function CourseSection({ initialCourses = [] }: { initialCourses: Course[] }) {
+  const { user } = useAuth()
+  const [courses, setCourses] = useState<Course[]>(initialCourses)
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("course_updates")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "user_courses",
+          filter: `user_id=eq.${user?.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === "UPDATE") {
+            setCourses((current) => 
+              current.map((course) => 
+                course.id === payload.new.id ? (payload.new as Course) : course
+              )
+            );
+            
+          }
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user?.id])
+
   return (
-    <section className="space-y-4">
+    <section className="space-y-4"> 
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Relevant Courses</h2>
         <div className="flex gap-2">
@@ -45,11 +66,18 @@ export function CourseSection() {
         {courses.map((course) => (
           <Card key={course.id} className="overflow-hidden">
             <CardContent className="p-0">
-              <img src={course.image || "/placeholder.svg"} alt={course.title} className="w-full h-48 object-cover" />
+              <img
+                src="/placeholder.svg?height=200&width=150"
+                alt={course.course_name}
+                className="w-full h-48 object-cover"
+              />
               <div className="p-4">
-                <h3 className="font-semibold">{course.title}</h3>
+                <h3 className="font-semibold">{course.course_name}</h3>
+                <div className="mt-2 bg-gray-200 rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: `${course.progress}%` }} />
+                </div>
                 {course.completed && (
-                  <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                  <span className="inline-block px-2 py-1 mt-2 text-xs bg-green-100 text-green-800 rounded-full">
                     Completed
                   </span>
                 )}
