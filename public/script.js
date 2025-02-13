@@ -63,8 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     addBotMessage(`
         <span class="bot-text">
-            Hello, I am Zaneta! I will ask a few questions to get to know you better so that I can understand your goals and recommend courses and create a personalized schedule!<br><br>
-            May I know what do you wish to achieve from learning programming?
+            May I know what is your goal for learning programming?
         </span>
     `);
 });
