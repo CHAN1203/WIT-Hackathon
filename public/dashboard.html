@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Zaneta</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #c7b3f0, #f3f2f2);
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #9b6ee2;
+        }
+        .nav-links {
+            display: flex;
+            gap: 50px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            color: #007bff;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 100px 40px;
+        }
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .courses {
+            display: flex;
+            gap: 20px;
+        }
+        .course-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+        }
+        .schedule {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .goal, .chatbot {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="logo">Zaneta</div>
+        <nav class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="#project">Project</a>
+            <a href="#forum">Forum</a>
+            <a href="#profile">Profile</a>
+            <a href="#logout">Log Out</a>
+        </nav>
+    </div>
+    
+    <div class="container">
+        <div class="left-section">
+            <h1>Welcome John!</h1>
+            <p>Here is your Profile Dashboard</p>
+            <h2>Relevant Courses</h2>
+            <div class="courses">
+                <div class="course-card">Python Programming</div>
+                <div class="course-card">Exploratory Data Analysis</div>
+                <div class="course-card">Machine Learning</div>
+            </div>
+            <div class="schedule">
+                <h2>Recommended Schedule</h2>
+                <p>January 2025 Calendar...</p>
+            </div>
+        </div>
+        
+        <div class="right-section">
+            <div class="goal">
+                <h2>Goal: To be proficient in data analysis</h2>
+                <ul>
+                    <li>✔ Python Programming</li>
+                    <li>✔ Exploratory Data Analysis</li>
+                    <li>✖ Machine Learning</li>
+                    <li>🔒 Project</li>
+                </ul>
+            </div>
+            <div class="chatbot">
+                <h2>Ask Zaneta</h2>
+                <p>Chat interface for asking questions...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

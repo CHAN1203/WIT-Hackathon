@@ -20,20 +20,12 @@ body {
     overflow: hidden;
 }
 
-/* Chat Title */
-.chat-title {
-    font-size: 2em;
-    color: white;
-    padding: 20px;
-    text-align: left;
-    font-weight: bold;
-}
-
 /* Chat Box */
 .chat-box {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 50px;
+    padding: 60px;
+    padding-top: 100px;
     display: flex;
     flex-direction: column;
     gap: 10px;

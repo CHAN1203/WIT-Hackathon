@@ -1,3 +1,14 @@
+document.addEventListener("DOMContentLoaded", function () {
+    askProgrammingGoal();
+});
+
+const userResponses = {
+    programmingObjective: null,
+    skillLevel: null,
+    timeframe: null
+};
+
+// Function to send user input to the server for validation
 async function sendMessage() {
     const userInput = document.getElementById("userInput").value.trim();
     if (!userInput) return;
@@ -10,37 +21,46 @@ async function sendMessage() {
     botMessage.classList.add("bot-message");
     botMessage.innerText = "Thinking...";
     document.getElementById("chatBox").appendChild(botMessage);
-    
+
     try {
-        // Step 1: Validate User Input
+        // Determine the expected type of response
+        let expectedAnswerType = determineExpectedAnswerType();
+
+        // Step 1: Validate User Input with the Server
         const validationResponse = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userInput, validateOnly: true })
+            body: JSON.stringify({
+                message: userInput,
+                validateOnly: true,
+                expectedAnswerType
+            })
         });
 
         const validationData = await validationResponse.json();
         const isValid = validationData.validation === "Valid";
 
         if (!isValid) {
-            botMessage.innerText = "I didn't understand that. Could you please rephrase your response?";
+            botMessage.innerText = "I didn't quite understand that. Could you please clarify your response?";
             return;
         }
 
-        // Step 2: Proceed with Conversation
+        // Step 2: Proceed Based on Conversation Flow
+        botMessage.remove(); // Remove "Thinking..." message
+
         if (!userResponses.programmingObjective) {
             userResponses.programmingObjective = userInput;
-            setTimeout(() => askSkillLevel(), 1000);
+            setTimeout(() => askSkillLevel(), 500);
         } else if (!userResponses.skillLevel) {
             userResponses.skillLevel = userInput;
-            setTimeout(() => askTimeframe(), 1000);
+            setTimeout(() => askTimeframe(), 500);
         } else if (!userResponses.timeframe) {
             const weeks = userInput.match(/\d+/);
             if (weeks) {
                 userResponses.timeframe = weeks[0];
-                setTimeout(() => generateCoursePlan(), 1000);
+                setTimeout(() => generateCoursePlan(), 500);
             } else {
-                botMessage.innerText = "Please enter a valid number of weeks (e.g. '8').";
+                addBotMessage("Please enter a valid number of weeks (e.g., '8 weeks').");
             }
         }
 
@@ -49,57 +69,28 @@ async function sendMessage() {
     }
 }
 
-
-// Listen for Enter key in input field
-document.getElementById("userInput").addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-        event.preventDefault(); // Prevent default form submission behavior
-        sendMessage(); // Trigger message sending
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const chatBox = document.getElementById("chatBox");
-
-    addBotMessage(`
-        <span class="bot-text">
-            May I know what is your goal for learning programming?
-        </span>
-    `);
-});
-
-// Store user responses
-const userResponses = {
-    programmingObjective: null,
-    skillLevel: null,
-    timeframe: null
-};
-
-function sendMessage() {
-    const userInput = document.getElementById("userInput").value.trim();
-    if (!userInput) return;
-
-    addUserMessage(userInput);
-    document.getElementById("userInput").value = "";
-
-    // Save User Response Based on Conversation Flow
+// Function to determine what type of response is expected
+function determineExpectedAnswerType() {
     if (!userResponses.programmingObjective) {
-        userResponses.programmingObjective = userInput;
-        setTimeout(() => askSkillLevel(), 1000);
+        return "programming learning goal (e.g., Web Development, AI, Cybersecurity, Data Science, Data Analytics, Machine Learning)";
     } else if (!userResponses.skillLevel) {
-        userResponses.skillLevel = userInput;
-        setTimeout(() => askTimeframe(), 1000);
+        return "skill level (e.g. Beginner, Intermediate, Advanced, Expert)";
     } else if (!userResponses.timeframe) {
-        userResponses.timeframe = userInput;
-        setTimeout(() => generateCoursePlan(), 1000);
+        return "timeframe in weeks (e.g. 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)";
     }
 }
 
-function askSkillLevel() {
-    // First bot message (question)
-    addBotMessage(`<span class="bot-text">I see! What is your proficiency level?</span>`);
+// Ask for programming goal
+function askProgrammingGoal() {
+    setTimeout(() => {
+        addBotMessage("May I know what is your goal for learning programming?");
+        showTextInput(sendMessage);
+    }, 500);
+}
 
-    // Delay to show the next message separately
+// Ask for skill level
+function askSkillLevel() {
+    addBotMessage("What is your current proficiency level in programming?");
     setTimeout(() => {
         addBotMessage(`
             <div class="button-container">
@@ -109,9 +100,8 @@ function askSkillLevel() {
                 <button onclick="selectSkillLevel('Expert')">Expert</button>
             </div>
         `);
-    }, 1000); // 1-second delay for better UX
+    }, 500);
 }
-
 
 function selectSkillLevel(level) {
     addUserMessage(level);
@@ -119,40 +109,14 @@ function selectSkillLevel(level) {
     setTimeout(() => askTimeframe(), 1000);
 }
 
+// Ask for timeframe
 function askTimeframe() {
-    addBotMessage(`
-        <span class="bot-text">
-            Great! How long do you plan to complete these courses? (Enter the number of weeks, e.g., "8 weeks")
-        </span>
-    `);
+    setTimeout(() => {
+        addBotMessage("How long do you plan to complete these courses? (Enter the number of weeks, e.g., '8 weeks')");
+    }, 500);
 }
 
-function sendMessage() {
-    const userInput = document.getElementById("userInput").value.trim();
-    if (!userInput) return;
-
-    addUserMessage(userInput);
-    document.getElementById("userInput").value = "";
-
-    // Check conversation stage
-    if (!userResponses.programmingObjective) {
-        userResponses.programmingObjective = userInput;
-        setTimeout(() => askSkillLevel(), 1000);
-    } else if (!userResponses.skillLevel) {
-        userResponses.skillLevel = userInput;
-        setTimeout(() => askTimeframe(), 1000);
-    } else if (!userResponses.timeframe) {
-        // Validate if user input is a number (for weeks)
-        const weeks = userInput.match(/\d+/); // Extract number from input
-        if (weeks) {
-            userResponses.timeframe = weeks[0]; // Store only the number of weeks
-            setTimeout(() => generateCoursePlan(), 1000);
-        } else {
-            addBotMessage("Please enter a valid number of weeks (e.g., '8 weeks').");
-        }
-    }
-}
-
+// Generate course plan
 function generateCoursePlan() {
     addBotMessage("Analyzing your responses and generating your learning plan...");
 
@@ -166,6 +130,16 @@ function generateCoursePlan() {
     .catch(error => addBotMessage("Error: Unable to fetch recommendations."));
 }
 
+// Show text input for free-text questions
+function showTextInput(callbackFunction) {
+    const inputContainer = document.getElementById("buttonContainer");
+    inputContainer.innerHTML = `
+        <input type="text" id="userInput" placeholder="Type your answer here...">
+        <button onclick="${callbackFunction.name}()">Send</button>
+    `;
+}
+
+// Display user message in chat
 function addUserMessage(message) {
     const chatBox = document.getElementById("chatBox");
     const userMessage = document.createElement("div");
@@ -175,6 +149,7 @@ function addUserMessage(message) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// Display bot message in chat
 function addBotMessage(message) {
     const chatBox = document.getElementById("chatBox");
     const botMessage = document.createElement("div");
@@ -184,3 +159,10 @@ function addBotMessage(message) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// Listen for Enter key in text input
+document.addEventListener("keypress", function (event) {
+    if (event.key === "Enter" && document.getElementById("userInput")) {
+        event.preventDefault(); // Prevent default form submission behavior
+        sendMessage();
+    }
+});

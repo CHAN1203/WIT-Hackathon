@@ -41,8 +41,8 @@ function extractCoursesAndDurations(text) {
     return { courses, durations };
 }
 
-// Function to store courses in Supabase
-async function storeCoursesInSupabase(courses, durations) {
+    // Function to store courses in Supabase
+    async function storeCoursesInSupabase(courses, durations) {
 
     let courseEntries = courses.map((course, index) => ({
         course_name: course,
@@ -66,7 +66,7 @@ app.post("/chat", async (req, res) => {
         const { message, context, validateOnly } = req.body;
 
         if (validateOnly) {
-            const validationPrompt = `Does this message make sense in the context of learning programming? 
+            const validationPrompt = `Does this message make sense in the context of programming courses, proficiency level and timeframe? 
                 Respond with "Valid" if yes, or "Invalid" if not.
                 Message: "${message}"`;
 
@@ -98,7 +98,7 @@ app.post("/chat", async (req, res) => {
         const prompt = `
             User's Learning Objective: ${context.programmingObjective}
             User's Skill Level: ${context.skillLevel}
-            User's Preferred Timeframe: ${context.timeframe} weeks
+            User's Preferred Timeframe: ${context.timeframe}
             Based on this, recommend 3 to 5 Coursera courses within the user's timeframe.
             Always quote the course names, and bracket the duration.
             Answer directly.
@@ -131,8 +131,27 @@ app.post("/chat", async (req, res) => {
         const { courses, durations } = extractCoursesAndDurations(botReply);
 
         console.log(courses,durations);
+        
         // Store in Supabase
         const success = await storeCoursesInSupabase(courses, durations);
+
+        // Construct response with a button linking to the homepage
+        const homepageButton = `
+        <br><br>
+        <a href="/" style="text-decoration:none;">
+            <button style="
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 20px;
+                font-size: 16px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            ">
+                Go to Homepage
+            </button>
+        </a>
+    `;
 
         res.json({ reply: botReply, courses, durations, stored: success });
 
