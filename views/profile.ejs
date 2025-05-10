@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnlyFoods Profile Page</title>
+    <link rel="stylesheet" href="/styles/profile.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <a href="/main" style="text-decoration: none; color: inherit">
+          <h2 class="logo">
+          <span class="logo-o">O</span><span class="logo-nly">nly</span><span class="logo-foods">Foods</span>
+          </h2>
+      </a>
+      <a href="#" class="sidebar-btn add-btn" id="addPostBtn">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add</span>
+      </a>
+      <a href="/main" class="sidebar-btn" id="searchBarToggle">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+      </a>
+      <a href="/notifications" class="sidebar-btn">
+          <i class="fa-solid fa-bell"></i>
+          <span>Notifications</span>
+      </a>
+      <a href="/profile" class="sidebar-btn">
+          <i class="fa-solid fa-user"></i>
+          <span>Profile</span>
+      </a>
+      <a href="/settings" class="sidebar-btn">
+          <i class="fa-solid fa-gear"></i>
+          <span>Settings</span>
+      </a>
+      <a href="/logout" class="sidebar-btn" onclick="return confirmLogout(event)">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </a>
+  </div>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Profile Section -->
+      <div class="profile-section">
+        <!--Profile Picture, Height, Weight Section-->
+        <div class="profile-info">
+          <img
+            src="<%=profile_picture%>"
+            alt="Profile Picture"
+            class="profile-pic"
+            onmouseover="showTooltip(event)" 
+            onmouseout="hideTooltip(event)"
+            data-tooltip-id="editProfilePicTip"
+            onclick="openProfilePicModal()"
+          />
+          <div id="editProfilePicTip" class="tooltip">Change profile picture</div>
+          <div class="profile-details" onmouseover="showTooltip(event)" onmouseout="hideTooltip(event)" data-tooltip-id="editProfileTip">
+            <h3 id="username"><%= username %></h3>
+            <p>
+              Age:
+              <span id="age"><%= age %></span> years
+            </p>
+            <p>
+              <i class="fa-solid fa-cake-candles"></i>
+              Birthday:
+              <span id="birthday"><%= birthday %></span>
+            </p>
+            <p>
+              Height:
+              <span id="height"><%= height %> cm</span>
+            </p>
+            <p>Weight: <span id="weight"><%= weight %> kg</span></p>
+            <p>
+              Target Weight:
+              <span id="target-weight"><%= targetWeight %> kg</span>
+            </p>
+          </div>
+          <div id="editProfileTip" class="tooltip">Edit profile details</div>
+        </div>
+        <!--Posts, Followers and Following Section-->
+        <div class="profile-stats-and-meter">
+          <div class="dashboard-container">
+            <div class="calorie-meter">
+              <div class="meter-card">
+                <svg width="150" height="150" viewBox="0 0 150 150">
+                  <!-- Background circle -->
+                  <circle
+                    cx="75"
+                    cy="75"
+                    r="70"
+                    fill="#2A2A2A"
+                    stroke="#3A3A3A"
+                    stroke-width="10"
+                  />
+                  <!-- Progress circle -->
+                  <circle
+                    cx="75"
+                    cy="75"
+                    r="70"
+                    fill="none"
+                    stroke="#4CAF50"
+                    stroke-width="10"
+                    stroke-dasharray="439.8"
+                    stroke-dashoffset="<%=439.8 - (percentage/100 * 439.8)%>"
+                    class="progress"
+                  />
+                  <!-- Center text -->
+                  <text
+                    x="75"
+                    y="65"
+                    text-anchor="middle"
+                    class="calories-text"
+                    fill="#fff"
+                    font-size="24"
+                  >
+                    <%=currentCalories %>
+                  </text>
+                  <text
+                    x="75"
+                    y="90"
+                    text-anchor="middle"
+                    class="label-text"
+                    fill="#888"
+                    font-size="14"
+                  >
+                    calories
+                  </text>
+                </svg>
+                <p class="calories-label">
+                  Daily Target:
+                  <span id="target-calories"><%= targetCalories %></span>
+                  kcal
+                </p>
+              </div>
+            </div>
+
+            <div class="daily-meals-container">
+              <div class=""daily-meals-header">
+                <h2>Daily Meals</h2>
+                <button id="openMealModalBtn" class="add-meal-btn">
+                  Add Meal
+                </button>
+              </div>  
+              <div class="daily-meals" id="dailyMeals">
+                <% if (dailyMeals.length === 0) { %>
+                <p class="empty-meals-message">
+                  Input the meals you had today!
+                </p>
+                <% } else { %>
+                <div
+                  class="meals-list <%= dailyMeals.length > 3 ? 'compact-view' : '' %>"
+                >
+                  <% dailyMeals.forEach(function(meal, index) { %>
+                  <div
+                    class="meal-card <%= index >= 3 ? 'compact-card' : '' %>"
+                  >
+                    <div class="meal-content">
+                      <h3 class="meal-title"><%= meal.food_title %></h3>
+                      <p class="meal-ingredients">
+                        <%= meal.food_ingredients.map(ingredient =>
+                        ingredient.name).join(', ') %>
+                      </p>
+                      <p class="meal-calories">
+                        Calories: <%= meal.calories %>
+                      </p>
+                    </div>
+                  </div>
+                  <% }); %>
+                </div>
+                <% } %>
+              </div>
+              <div id="addMealModal" class="modal">
+                <div class="modal-content">
+                  <span class="close">&times;</span>
+                  <h2>Add Daily Meal</h2>
+                  <form id="addMealForm">
+                    <input
+                      type="text"
+                      id="mealTitle"
+                      name="title"
+                      placeholder="Meal Title"
+                      required
+                    />
+
+                    <select id="mealType" name="mealType" required>
+                      <option value="">Select a meal type</option>
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="snack">Snack</option>
+                    </select>
+
+                    <label for="ingredient-search"
+                      >Search for an ingredient:</label
+                    >
+                    <input
+                      type="text"
+                      id="ingredient-search"
+                      placeholder="Type ingredient name"
+                      autocomplete="off"
+                    />
+                    <ul id="ingredient-suggestions"></ul>
+
+                    <label for="quantity">Quantity (in grams):</label>
+                    <input
+                      type="number"
+                      id="quantity"
+                      name="quantity"
+                      placeholder="Enter quantity in grams"
+                      min="1"
+                    />
+
+                    <button type="button" id="addIngredientBtn">
+                      Add Ingredient
+                    </button>
+                    <div id="nutrition-info">
+                      <h2>Selected Ingredients</h2>
+                      <ul id="ingredient-list"></ul>
+                      <p id="total-calories">Total Calories: 0</p>
+                    </div>
+
+                    <button id="submitMealBtn" type="submit">Add Meal</button>
+                    <button type="button" id="cancelMealBtn">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Profile Picture Edit Modal -->
+        <div id="editProfilePicModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeProfilePicModal()">&times;</span>
+            <h2>Edit Profile Picture</h2>
+            <form id="editProfilePicForm">
+              <div class="form-group">
+                <label for="profilePicUpload">Upload New Picture:</label>
+                <input
+                  type="file"
+                  name="profilePicUpload"
+                  id="profilePicUpload"
+                  accept="image/*"
+                  required
+                />
+              </div>
+              <button type="submit">Update Picture</button>
+              <button type="button" onclick="closeProfilePicModal()">Cancel</button>
+            </form>
+          </div>
+        </div>
+        <div id="editProfileModal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Profile Info</h2>
+            <form id="editProfileForm">
+              <div class="form-group">
+                <label for="editUsername">Username:</label>
+                <input
+                  type="text"
+                  id="editUsername"
+                  placeholder="Enter Username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="editBirthday">Birthday:</label>
+                <input
+                  type="date"
+                  id="editBirthday"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="editHeight">Height:</label>
+                <input
+                  type="number"
+                  id="editHeight"
+                  placeholder="Height (cm)"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="editWeight">Weight:</label>
+                <input
+                  type="number"
+                  id="editWeight"
+                  placeholder="Weight (kg)"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="editTargetWeight">Target Weight:</label>
+                <input
+                  type="number"
+                  id="editTargetWeight"
+                  placeholder="Target Weight (kg)"
+                  required
+                />
+              </div>
+              <button type="submit">Update Profile</button>
+              <button type="button" id="cancelEditButton">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Food Posts Grid -->
+      <div class="food-posts-container">
+        <!-- Tab Links -->
+        <div class="tabs">
+          <button class="tab" id="myPostsTab">My Posts</button>
+          <button class="tab" id="savedPostsTab">Saved Posts</button>
+        </div>
+
+        <!-- Dynamic Heading -->
+        <h2 id="postTitle">My Food Posts</h2>
+
+        <div class="food-posts-grid" id="foodPostsGrid">
+        </div>
+      </div>
+      <div id="addPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAddPostModal">&times;</span>
+            <h2>Add New Recipe</h2>
+            <form id="addPostForm" action = "/main" method="POST" enctype="multipart/form-data">
+                <input type="text" id="recipeTitle" name="title" placeholder="Recipe Title" required>
+                <textarea id="recipeDescription" name="description" placeholder="Recipe Description" required></textarea>
+                
+                <select id="recipeCategory" name="category" required>
+                  <option value="">Select a category</option>
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                  <option value="snacks">Snacks</option>
+                </select>
+                <label for="a-ingredient-search">Search for an ingredient:</label>
+                <input type="text" id="a-ingredient-search" placeholder="Type ingredient name" autocomplete="off">
+                <ul id="a-ingredient-suggestions"></ul> <!-- Search results suggestions -->
+
+                <label for="a-quantity">Quantity (in grams):</label>
+                <input type="number" id="a-quantity" name="a-quantity" placeholder="Enter quantity in grams" min="1">
+
+                <button id="a-addIngredientBtn" type="submit">Add Ingredient</button>
+                <div id="a-nutrition-info">
+                  <h2>Selected Ingredients</h2>
+                  <ul id="a-ingredient-list" name = "ingredient"></ul>
+                  <p id="a-total-calories">Total Calories: 0</p>
+                </div>
+
+                <input type="file" id="recipeImage" name="recipeImage" accept="image/*" required>
+                <button id="postRecipeBtn" type="submit">Post Recipe</button>
+            </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function confirmLogout(event) {
+        const confirmation = confirm("Are you sure you want to log out?");
+        if (!confirmation) {
+            // Prevent the default action (navigation) if the user cancels
+            event.preventDefault();
+        }
+        return confirmation; // Only returns true if user confirms
+      }
+      const apiKey = '85ef1ec3b7810ef681a05aef6e9e72d3'; // Replace with your actual API key
+      const appId = 'ff698b8c';   // Replace with your actual App ID
+      const apiUrl = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
+      const searchUrl = 'https://trackapi.nutritionix.com/v2/search/instant?query=';
+      
+      function openProfilePicModal() {
+        document.getElementById("editProfilePicModal").style.display = "block";
+      }
+
+      // Function to close the Profile Picture Modal
+      function closeProfilePicModal() {
+        document.getElementById("editProfilePicModal").style.display = "none";
+        document.getElementById("editProfilePicForm").reset();
+      }
+
+      // Show tooltip and position it near the cursor
+      function showTooltip(event) {
+        const tooltipId = event.target.getAttribute("data-tooltip-id");
+        const tooltip = document.getElementById(tooltipId);
+
+        if (tooltip) {
+          tooltip.style.display = "block";
+          tooltip.style.left = event.pageX + 10 + "px"; // Offset from cursor
+          tooltip.style.top = event.pageY + 10 + "px";
+        }
+
+        // Update tooltip position as the cursor moves
+        event.target.addEventListener("mousemove", moveTooltip);
+      }
+
+      // Move tooltip with cursor
+      function moveTooltip(event) {
+        const tooltipId = event.target.getAttribute("data-tooltip-id");
+        const tooltip = document.getElementById(tooltipId);
+
+        if (tooltip) {
+          tooltip.style.left = event.pageX + 10 + "px";
+          tooltip.style.top = event.pageY + 10 + "px";
+        }
+      }
+
+      // Hide tooltip when the cursor leaves
+      function hideTooltip(event) {
+        const tooltipId = event.target.getAttribute("data-tooltip-id");
+        const tooltip = document.getElementById(tooltipId);
+
+        if (tooltip) {
+          tooltip.style.display = "none";
+        }
+
+        // Remove event listener to stop moving tooltip when not needed
+        event.target.removeEventListener("mousemove", moveTooltip);
+      }
+
+      function showPosts(type, foodPosts, savedFoodPosts) {
+        const title = document.getElementById("postTitle");
+        const foodPostsGrid = document.getElementById("foodPostsGrid");
+        const tabs = document.querySelectorAll(".tab");
+
+        // Clear existing content
+        foodPostsGrid.innerHTML = "";
+
+        // Remove the active class from all tabs
+        tabs.forEach(tab => tab.classList.remove("active"));
+
+        // Set the active tab and update title based on the clicked tab
+        if (type === 'myPosts') {
+          title.textContent = "My Food Posts";
+          document.querySelector(".tab:nth-child(1)").classList.add("active");
+          displayPosts(foodPosts, foodPostsGrid); // Display 'My Posts' content
+        } else if (type === 'savedPosts') {
+          title.textContent = "Saved Food Posts";
+          document.querySelector(".tab:nth-child(2)").classList.add("active");
+          displayPosts(savedFoodPosts, foodPostsGrid); // Display 'Saved Posts' content
+        }
+      }
+
+      // Function to render posts in the grid
+      function displayPosts(posts, foodPostsGrid) {
+        if (posts.length === 0) {
+          foodPostsGrid.innerHTML = '<div class="no-posts-message">No Posts</div>';
+        } else {
+          posts.forEach((post,index) => {
+            const postElement = document.createElement("div");
+            postElement.classList.add("food-post");
+            postElement.innerHTML = `<img src="${post.image}" alt="Food post" onclick="window.location.href='/post/${post.id}'"/>`;
+            foodPostsGrid.appendChild(postElement);
+
+            // Use setTimeout to add the "show" class with delay based on index
+            setTimeout(() => {
+              postElement.classList.add("show");
+            }, index * 100); // Delay of 100ms between each post
+                });
+        }
+      }
+    
+      //===============================================Add Post Modal=========================================================//
+      const addPostModal = document.getElementById("addPostModal");
+      const addBtn = document.getElementById("addPostBtn");
+      const closeAddPostModalBtn = document.getElementById("closeAddPostModal");
+      const postRecipeBtn = document.getElementById('postRecipeBtn');
+
+      addBtn.onclick = function() {
+        addPostModal.style.display = "block";
+      }
+
+      // Handle form submission
+    const addPostForm = document.getElementById('addPostForm');
+    document.getElementById("postRecipeBtn").addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('recipeTitle').value;
+        const description = document.getElementById('recipeDescription').value;
+        const category = document.getElementById('recipeCategory').value;
+        const imageFile = document.getElementById('recipeImage').files[0];
+        const ingredientList = document.getElementById('a-ingredient-list');
+        const totalCaloriesElem = document.getElementById('a-total-calories');
+        const selectedIngredients = Array.from(document.querySelectorAll('#a-ingredient-list li'))
+        .map(li => {
+            return {
+                name: li.textContent.split(' - ')[0], // Get ingredient name
+                quantity: parseInt(li.textContent.match(/\((\d+)g\)/)[1]), // Get quantity in grams
+                calories: parseFloat(li.textContent.match(/- (\d+(\.\d+)?) kcal/)[1]) // Get calories
+            };
+        });
+
+        const totalCaloriesText = totalCaloriesElem.textContent;
+        const totalCalories = parseInt(totalCaloriesText.match(/\d+/)[0]);
+
+        if (!title || !description || !category || !imageFile || selectedIngredients.length === 0) {
+            alert("Please fill in all fields before submitting.");
+            return; // Stop form submission
+        }   
+
+        const formData = new FormData(addPostForm);
+        formData.set('ingredients', JSON.stringify(selectedIngredients)); // Add serialized ingredients
+        formData.set('calories', totalCalories);
+
+        try {
+          const response = await fetch("/addPost", {
+              method: "POST",
+              body: formData,
+          });
+
+          if (!response.ok) {
+              throw new Error("Failed to add post");
+          }
+
+          const result = await response.json();
+          console.log("Post added successfully", result);
+
+          // Optional: Fetch the updated list of posts or add the new post to the DOM
+
+          // Close the modal, reset the form, and clear ingredient history
+          
+          addPostModal.style.display = "none";
+          addPostForm.reset();
+          ingredientList.innerHTML = ''; // Clear all ingredients
+          const resetTotalCalories = 0; // Reset total calories
+          totalCaloriesElem.textContent = `Total Calories: ${resetTotalCalories}`;
+          location.reload();
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+      
+      document.addEventListener("DOMContentLoaded", () => {
+        /*Connect to nutrinix api; Handle add ingredient button and Submit post button*/
+        const searchInputA = document.getElementById('a-ingredient-search');
+        const suggestionsA = document.getElementById('a-ingredient-suggestions');
+        const ingredientListA = document.getElementById('a-ingredient-list');
+        const totalCaloriesElemA = document.getElementById('a-total-calories');
+        const addIngredientBtnA = document.getElementById('a-addIngredientBtn'); // Make sure this ID exists in your HTML
+        let totalCaloriesA = 0;
+
+        // Search for ingredients as the user types
+        searchInputA.addEventListener('input', async function () {
+            const query = searchInputA.value.trim();
+
+            if (query.length === 0) {
+                suggestionsA.innerHTML = ''; // Clear suggestions if input is empty
+                return;
+            }
+
+            try {
+                const response = await fetch(`${searchUrl}${query}`, {
+                    headers: {
+                        'x-app-id': appId,
+                        'x-app-key': apiKey
+                    }
+                });
+
+                const data = await response.json();
+                const foodList = data.common; // Assuming you want common food items
+
+                // Clear previous suggestions
+                suggestionsA.innerHTML = '';
+
+                // Populate suggestions based on search
+                foodList.forEach(food => {
+                    const li = document.createElement('li');
+                    li.textContent = food.food_name;
+                    li.dataset.foodName = food.food_name;
+                    suggestionsA.appendChild(li);
+                });
+
+                // Add click event to suggestion items
+                suggestionsA.querySelectorAll('li').forEach(item => {
+                    item.addEventListener('click', function () {
+                        searchInputA.value = item.dataset.foodName;
+                        suggestionsA.innerHTML = ''; // Clear suggestions after selecting
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error fetching ingredient data:', error);
+            }
+        });
+
+        const ingredientInputs = [];
+
+        // Handle form submission to add ingredient
+        addIngredientBtnA.addEventListener('click', async function (event) {  // Button functionality
+            event.preventDefault();
+            const selectedIngredient = searchInputA.value.trim();
+            const quantity = parseInt(document.getElementById('a-quantity').value);
+
+            if (!selectedIngredient || isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid ingredient and quantity.');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-app-id': appId,
+                        'x-app-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        query: `${quantity} grams of ${selectedIngredient}`
+                    })
+                });
+
+                const data = await response.json();
+                const ingredient = data.foods[0]; // Assuming the first match is the correct ingredient
+
+
+                // Display the ingredient and its calories
+                const listItem = document.createElement('li');
+                listItem.textContent = `${ingredient.food_name} (${quantity}g) - ${ingredient.nf_calories} kcal`;
+
+                // Create the remove button for each ingredient
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.className = "remove-ingredient";
+                removeButton.style.marginLeft = "10px";
+                
+                // Append the remove button to the ingredient item
+                listItem.appendChild(removeButton);
+
+                ingredientListA.appendChild(listItem);
+                ingredientInputs.push({ ingredient: ingredient.food_name, quantity: quantity});
+
+                // Reset input fields
+                searchInputA.value = "";
+                document.getElementById('a-quantity').value = "";
+
+                // Event listener for the remove button
+                removeButton.addEventListener("click", function() {
+                    listItem.remove(); // Remove ingredient from list
+                    totalCaloriesA -= ingredient.nf_calories;
+                    totalCaloriesElemA.textContent = `Total Calories: ${totalCaloriesA}`;
+                });
+
+                // Update total calories
+                totalCaloriesA += ingredient.nf_calories;
+                totalCaloriesElemA.textContent = `Total Calories: ${totalCaloriesA}`;
+
+            } catch (error) {
+                console.error('Error fetching nutrition data:', error);
+            }
+        });
+        //===============================================Profile info===========================================================//
+        const editProfilePicModal = document.getElementById("editProfilePicModal");
+        const editProfileModal = document.getElementById("editProfileModal");
+        const profileDetails = document.querySelector(".profile-details");
+        const closeBtns = document.getElementsByClassName("close");
+        const cancelEditBtn = document.getElementById("cancelEditButton");
+        const birthdayText = document.getElementById("birthday").innerText;
+        const birthdayDate = new Date(birthdayText);
+        const formattedDate = birthdayDate.toISOString().slice(0, 10);
+        
+        let foodPosts = [];
+        let savedFoodPosts = [];
+
+        fetch('/post-data') // Fetch the data from the server
+          .then(response => response.json())
+          .then(data => {
+            // Store the fetched data in variables
+            foodPosts = data.foodPosts;
+            savedFoodPosts = data.savedFoodPosts;
+
+            // Set the default active tab to "My Posts"
+            document.querySelector(".tab:nth-child(1)").classList.add("active");
+
+            // Display "My Posts" initially
+            showPosts('myPosts', foodPosts, savedFoodPosts);
+          })
+          .catch(error => console.error('Error fetching data:', error));
+
+
+        const postTab = document.getElementById("myPostsTab");
+        const savedTab = document.getElementById("savedPostsTab")
+  
+        // Add click event listener to each tab
+        postTab.addEventListener("click", function() {
+            showPosts('myPosts', foodPosts, savedFoodPosts);  // Call the function to show posts based on the clicked tab
+          });
+
+        savedTab.addEventListener("click", function() {
+          showPosts('savedPosts', foodPosts, savedFoodPosts);  // Call the function to show posts based on the clicked tab
+        });
+
+        // Show Edit Profile Modal and Populate Data
+        profileDetails.addEventListener("click", () => {
+          editProfileModal.style.display = "block";
+          
+          document.getElementById("editUsername").value = document.getElementById("username").innerText;
+          document.getElementById("editBirthday").value = formattedDate;
+          document.getElementById("editHeight").value = parseInt(
+            document.getElementById("height").innerText
+          );
+          document.getElementById("editWeight").value = parseInt(
+            document.getElementById("weight").innerText
+          );
+          document.getElementById("editTargetWeight").value = parseInt(
+            document.getElementById("target-weight").innerText
+          );
+        });
+
+        cancelEditBtn.onclick = () => {
+          editProfileModal.style.display = "none";
+          resetForm();
+        };
+
+        // Handle Edit Profile Form Submission
+        document
+          .getElementById("editProfileForm")
+          .addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const updatedUsername = document.getElementById("editUsername").value;
+            const updatedHeight = document.getElementById("editHeight").value;
+            const updatedWeight = document.getElementById("editWeight").value;
+            const updatedTargetWeight = document.getElementById("editTargetWeight").value;
+            const updatedBirthday = document.getElementById("editBirthday").value;
+
+            try {
+              const response = await fetch("/updateProfile", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  username: updatedUsername,
+                  height: updatedHeight,
+                  weight: updatedWeight,
+                  targetWeight: updatedTargetWeight,
+                  birthday: updatedBirthday,
+                }),
+              });
+
+              if (response.ok) {
+                location.reload();
+              } else {
+                alert("Failed to update profile. Please try again.");
+              }
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert("An error occurred. Please try again.");
+            }});
+
+        // Handle Edit Profile Picture Form Submission
+        const editProfilePicForm = document.getElementById("editProfilePicForm")
+        editProfilePicForm.onsubmit = async function(event) {
+          event.preventDefault();
+          
+          const formData = new FormData(editProfilePicForm);
+
+          try {
+            const response = await fetch('/update-profile-pic', {
+              method: 'POST',
+              body: formData,
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+              alert('Profile picture updated successfully!');
+              closeProfilePicModal();
+              location.reload();
+            } else {
+              alert(data.message || 'Failed to update profile picture');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        };
+
+        //===============================================Daily Meals===========================================================//
+        const addMealModal = document.getElementById("addMealModal");
+        const openMealModalBtn = document.getElementById("openMealModalBtn");
+        const addMealForm = document.getElementById("addMealForm");
+        const submitMealBtn = document.getElementById("submitMealBtn");
+        const cancelMealBtn = document.getElementById("cancelMealBtn");
+        const searchInput = document.getElementById("ingredient-search");
+        const suggestions = document.getElementById("ingredient-suggestions");
+        const ingredientList = document.getElementById("ingredient-list");
+        const totalCaloriesElem = document.getElementById("total-calories");
+        const addIngredientBtn = document.getElementById("addIngredientBtn");
+
+        let totalCalories = 0;
+        let selectedIngredients = [];
+
+        // Open Add Meal Modal
+        openMealModalBtn.onclick = () => {
+          addMealModal.style.display = "block";
+        };
+
+        // Close Modals
+        Array.from(closeBtns).forEach((closeBtn) => {
+          closeBtn.onclick = () => {
+            addPostModal.style.display = "none"
+            addPostForm.reset();
+            document.getElementById('a-ingredient-list').innerHTML = ''; // Clear all ingredients
+            const resetTotalCalories = 0; // Reset total calories
+            document.getElementById('a-total-calories').textContent = `Total Calories: ${resetTotalCalories}`;
+            addMealModal.style.display = "none";
+            editProfilePicModal.style.display = 'none';
+            editProfileModal.style.display = 'none';
+          };
+        });
+
+        cancelMealBtn.onclick = () => {
+          addMealModal.style.display = "none";
+          resetForm();
+        };
+
+        window.onclick = (event) => {
+          if (event.target == addMealModal) {
+            addMealModal.style.display = "none";
+            resetForm();
+          }
+          if (event.target == addPostModal) {
+            addPostModal.style.display = "none";
+            addPostForm.reset();
+            document.getElementById('a-ingredient-list').innerHTML = ''; // Clear all ingredients
+            const resetTotalCalories = 0; // Reset total calories
+            document.getElementById('a-total-calories').textContent = `Total Calories: ${resetTotalCalories}`;
+          }
+          const modal = document.getElementById("editProfilePicModal");
+          if (event.target == modal) {
+            closeProfilePicModal();
+          }
+        };
+
+        // Search for Ingredients (using your previous implementation)
+        searchInput.addEventListener("input", async () => {
+          const query = searchInput.value.trim();
+          if (query.length === 0) {
+            suggestions.innerHTML = "";
+            return;
+          }
+
+          try {
+            const response = await fetch(`${searchUrl}${query}`, {
+              headers: { "x-app-id": appId, "x-app-key": apiKey },
+            });
+            const data = await response.json();
+            suggestions.innerHTML = "";
+            data.common.forEach((food) => {
+              const li = document.createElement("li");
+              li.textContent = food.food_name;
+              li.dataset.foodName = food.food_name;
+              suggestions.appendChild(li);
+            });
+
+            // Add Click Event to Suggestions
+            suggestions.querySelectorAll("li").forEach((item) => {
+              item.addEventListener("click", () => {
+                searchInput.value = item.dataset.foodName;
+                suggestions.innerHTML = "";
+              });
+            });
+          } catch (error) {
+            console.error("Error fetching ingredient data:", error);
+          }
+        });
+
+        // Add Ingredient to List and Update Calories
+        addIngredientBtn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          const selectedIngredient = searchInput.value.trim();
+          const quantity = parseInt(document.getElementById("quantity").value);
+
+          if (!selectedIngredient || isNaN(quantity) || quantity <= 0) {
+            alert("Please enter a valid ingredient and quantity.");
+            return;
+          }
+
+          try {
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-app-id": appId,
+                "x-app-key": apiKey,
+              },
+              body: JSON.stringify({
+                query: `${quantity} grams of ${selectedIngredient}`,
+              }),
+            });
+            const data = await response.json();
+            const ingredient = data.foods[0];
+
+            // Create new ingredient object
+            const newIngredient = {
+              name: ingredient.food_name,
+              quantity: quantity,
+              calories: ingredient.nf_calories,
+            };
+
+            // Add to selectedIngredients array
+            selectedIngredients.push(newIngredient);
+
+            // Append the ingredient to the ingredientList
+            const listItem = document.createElement("li");
+            listItem.textContent = `${
+              ingredient.food_name
+            } (${quantity}g) - ${ingredient.nf_calories.toFixed(2)} kcal`;
+
+            // Create the remove button for each ingredient
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "Remove";
+            removeBtn.className = "remove-ingredient";
+            removeBtn.style.marginLeft = "10px";
+            
+            // Append the remove button to the ingredient item
+            listItem.appendChild(removeBtn);
+            ingredientList.appendChild(listItem);
+
+            // Event listener for the remove button
+            removeBtn.addEventListener("click", function() {
+                    listItem.remove(); // Remove ingredient from list
+                    totalCalories -= ingredient.nf_calories;
+                    totalCaloriesElem.textContent = `Total Calories: ${totalCalories}`;
+                });
+
+            totalCalories += ingredient.nf_calories;
+            totalCaloriesElem.textContent = `Total Calories: ${totalCalories.toFixed(
+              2
+            )}`;
+
+            // Clear input fields
+            searchInput.value = "";
+            document.getElementById("quantity").value = "";
+          } catch (error) {
+            console.error("Error fetching nutrition data:", error);
+          }
+        });
+
+        // Handle form submission
+        addMealForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const title = document.getElementById("mealTitle").value;
+          const mealType = document.getElementById("mealType").value;
+
+          if (!title || selectedIngredients.length === 0 || !mealType) {
+            alert("Please fill in all the fields.");
+            return;
+          }
+
+          try {
+            const response = await fetch("/addMeal", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                foodTitle: title,
+                foodIngredients: JSON.stringify(selectedIngredients),
+                calories: Math.round(totalCalories),
+                mealType: mealType,
+              }),
+            });
+
+            // First check if the response is ok before trying to parse JSON
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Try to parse the JSON response
+            try {
+              const result = await response.json();
+              console.log("Meal added successfully", result);
+
+              // Close the modal and reset the form
+              addMealModal.style.display = "none";
+              resetForm();
+
+              // Refresh the page to show the new meal
+              location.reload();
+            } catch (jsonError) {
+              console.error("JSON parsing error:", jsonError);
+              throw new Error("Invalid response format from server");
+            }
+          } catch (error) {
+            console.error("Error adding meal:", error);
+            alert(
+              `Failed to add meal. Please try again. Error: ${error.message}`
+            );
+          }
+        });
+        
+        function resetForm() {
+          addMealForm.reset();
+          ingredientList.innerHTML = "";
+          totalCalories = 0;
+          totalCaloriesElem.textContent = "Total Calories: 0";
+          selectedIngredients = [];
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings - OnlyFoods</title>
+    <link rel="stylesheet" href="/styles/settings.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+  <div class="sidebar">
+    <a href="/main" style="text-decoration: none; color: inherit">
+        <h2 class="logo">
+        <span class="logo-o">O</span><span class="logo-nly">nly</span><span class="logo-foods">Foods</span>
+        </h2>
+    </a>
+    <a href="#" class="sidebar-btn add-btn" id="addPostBtn">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add</span>
+    </a>
+    <a href="/main" class="sidebar-btn" id="searchBarToggle">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </a>
+    <a href="/notifications" class="sidebar-btn">
+        <i class="fa-solid fa-bell"></i>
+        <span>Notifications</span>
+    </a>
+    <a href="/profile" class="sidebar-btn">
+        <i class="fa-solid fa-user"></i>
+        <span>Profile</span>
+    </a>
+    <a href="/settings" class="sidebar-btn">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+    </a>
+    <a href="/logout" class="sidebar-btn" onclick="return confirmLogout(event)">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+
+    <div class="main-content">
+      <h1>Account Settings</h1>
+
+      <div class="setting-item">
+        <label for="email">Current Email</label>
+        <input type="text" id="email" value="<%= email %>" readonly />
+        <button id="changeEmailBtn">Change Email</button>
+      </div>
+
+      <div class="setting-item">
+        <label for="password">Password</label>
+        <input type="password" id="password" value="********" readonly />
+        <button id="changePasswordBtn">Change Password</button>
+      </div>
+
+      <div class="setting-item delete-account">
+        <h3>Delete Your Account</h3>
+        <p>This action is irreversible. Please proceed with caution.</p>
+        <button id="deleteAccountBtn" class="danger-btn">Delete Account</button>
+      </div>
+    </div>
+    </div>
+
+    <!-- Change Email Modal -->
+    <div id="changeEmailModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Change Email</h2>
+        <form
+          id="changeEmailForm"
+          action="/settings/update-email"
+          method="POST"
+        >
+          <label for="currentPasswordEmail">Current Password</label>
+          <input type="password" id="currentPasswordEmail" required />
+
+          <label for="newEmail">New Email</label>
+          <input type="text" id="newEmail" required />
+
+          <button type="submit">Confirm Change</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Change Password</h2>
+        <form
+          id="changePasswordForm"
+          action="/settings/update-password"
+          method="POST"
+        >
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" required />
+
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" required />
+
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input type="password" id="confirmNewPassword" required />
+
+          <button type="submit">Confirm Change</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal for delete confirmation -->
+    <div id="deleteAccountModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Delete Account</h2>
+        <p>
+          Are you sure you want to delete your account? This action cannot be
+          undone.
+        </p>
+        <form action="/settings/delete-account" method="POST">
+          <button type="submit" class="danger-btn">
+            Yes, delete my account
+          </button>
+          <button type="button" class="cancel-btn">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function confirmLogout(event) {
+        const confirmation = confirm("Are you sure you want to log out?");
+        if (!confirmation) {
+            // Prevent the default action (navigation) if the user cancels
+            event.preventDefault();
+        }
+        return confirmation; // Only returns true if user confirms
+      } 
+
+      // Get modal elements
+      const changeEmailModal = document.getElementById("changeEmailModal");
+      const changePasswordModal = document.getElementById(
+        "changePasswordModal"
+      );
+      const deleteAccountModal = document.getElementById("deleteAccountModal");
+
+      // Get buttons that open the modals
+      const changeEmailBtn = document.getElementById("changeEmailBtn");
+      const changePasswordBtn = document.getElementById("changePasswordBtn");
+      const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+
+      // Get the <span> elements that close the modals
+      const closes = document.getElementsByClassName("close");
+
+      // When the user clicks on the button, open the modal
+      changeEmailBtn.onclick = function () {
+        changeEmailModal.style.display = "block";
+      };
+
+      changePasswordBtn.onclick = function () {
+        changePasswordModal.style.display = "block";
+      };
+
+      deleteAccountBtn.onclick = function () {
+        deleteAccountModal.style.display = "block";
+    };
+
+      // When the user clicks on <span> (x), close the modal
+      for (let close of closes) {
+        close.onclick = function () {
+          changeEmailModal.style.display = "none";
+          changePasswordModal.style.display = "none";
+          deleteAccountModal.style.display = "none";
+        };
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == changeEmailModal) {
+          changeEmailModal.style.display = "none";
+        }
+        if (event.target == changePasswordModal) {
+          changePasswordModal.style.display = "none";
+        }
+        if (event.target == deleteAccountModal) {
+            deleteAccountModal.style.display = "none";
+      };
+    }
+
+      // Handle email change
+      document.getElementById("changeEmailForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const currentPassword = document.getElementById(
+          "currentPasswordEmail"
+        ).value;
+        const newEmail = document.getElementById("newEmail").value;
+
+        try {
+          const response = await fetch("/settings/update-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, email: newEmail }),
+          });
+          console.log("Response status:", response.status); // Log status
+          const data = await response.json();
+          console.log("Response data:", data); // Log response data
+
+          if (response.ok) {
+            document.getElementById("email").value = newEmail;
+            alert("Email updated successfully!");
+          } else {
+            console.log("Error message from server:", data.error);
+            alert(data.error || "Failed to update email.");
+          }
+        } catch (error) {
+          console.error("Error updating email:", error);
+          alert("An error occurred. Please try again.");
+        }
+
+        changeEmailModal.style.display = "none";
+        this.reset();
+      };
+
+      // Handle password change
+      document.getElementById("changePasswordForm").onsubmit = async function (
+        e
+      ) {
+        e.preventDefault();
+        const currentPassword =
+          document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmNewPassword =
+          document.getElementById("confirmNewPassword").value;
+
+        if (newPassword !== confirmNewPassword) {
+          alert("New passwords do not match");
+          return;
+        }
+
+        try {
+          const response = await fetch("/settings/update-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword }),
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            document.getElementById("password").value = "*".repeat(
+              newPassword.length
+            );
+            alert("Password updated successfully!");
+          } else {
+            alert(data.error || "Failed to update password.");
+          }
+        } catch (error) {
+          console.error("Error updating password:", error);
+          alert("An error occurred. Please try again.");
+        }
+
+        changePasswordModal.style.display = "none";
+        this.reset();
+      };
+
+      // Handle account deletion
+        document.querySelector("#deleteAccountModal form").onsubmit = async function (e) {
+        e.preventDefault();
+        if (confirm("Are you absolutely sure you want to delete your account? This action cannot be undone.")) {
+            try {
+            const response = await fetch("/settings/delete-account", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Your account has been successfully deleted.");
+                window.location.href = "/"; // Redirect to logout or home page
+            } else {
+                alert(data.error || "Failed to delete account.");
+            }
+            } catch (error) {
+            console.error("Error deleting account:", error);
+            alert("An error occurred. Please try again.");
+            }
+        }
+        deleteAccountModal.style.display = "none";
+        };
+
+        // Add event listener for the cancel button in the delete account modal
+        document.querySelector("#deleteAccountModal .cancel-btn").addEventListener("click", function() {
+            deleteAccountModal.style.display = "none";
+        });
+    </script>
+  </body>
+</html>

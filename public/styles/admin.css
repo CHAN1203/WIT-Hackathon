@@ -1,0 +1,260 @@
+@import url('styles.css');
+
+.admin_logo {
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+  color: red; 
+  font-size: 20px; 
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+.tab-buttons button {
+  padding: 10px 20px;
+  border: 2px solid transparent;
+  border-radius: 30px; /* Rounded corners for consistency */
+  background-color: #e0f7e7; /* Light green background */
+  color: #2e7d32; /* Dark green text */
+  font-size: 14px;
+  font-weight: 600; /* Bold text */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition */
+  min-width: 110px; /* Set minimum width for buttons */
+  text-align: center;
+}
+
+.tab-buttons button.active {
+  background-color: #388e3c; /* Dark green for active button */
+  color: white; /* White text for active button */
+  border-color: #388e3c; /* Matching border */
+  transform: translateY(-3px); /* Lift effect for active button */
+}
+
+.tab-buttons button:hover {
+  background-color: #81c784; /* Lighter green on hover */
+  color: #388e3c; /* Dark green text on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Notification List */
+.notification-list {
+  background-color: #1A1A1A;
+  border-radius: 10px;
+  padding: 20px;
+
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* Add spacing between items */
+}
+
+.user-info {
+  flex: 1; /* Allow it to take up remaining space */
+  display: flex;
+  align-items: center;
+}
+
+.review-btn {
+  margin-left: 10px; /* Add spacing between the content and the button */
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding: 15px 20px; /* Consistent padding on both sides */  
+  max-height: 50px; /* Set a fixed minimum height */
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.hidden {
+  opacity: 0;              /* Hide the element visually */
+  pointer-events: none;    /* Disable interaction */
+  transition: opacity 0.3s ease; /* Smooth transition for visibility */
+}
+
+.notification-item .user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-grow: 1; /* Allows this section to take up the available space */
+}
+
+.notification-item .user-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.notification-item .user-info .details {
+  font-size: 1em;
+}
+
+.notification-item .user-info .details span {
+  display: block;
+  color: #ccc;
+}
+
+.notification-item .user-info a {
+  color: white;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+/* Review Button */
+.notification-item .review-btn {
+  padding: 10px 20px;
+  background-color: #41A317;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  margin-left: auto; /* Pushes the button to the right */
+  align-items: center; /* Ensure the button content is aligned properly */
+}
+
+.notification-item .review-btn:hover {
+  background-color: #45a049;
+}
+
+  /* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #222;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Report Form Styles */
+.form {
+    max-width: 100%;
+    padding: 20px;
+    background-color: rgb(40, 39, 39);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+h2 {
+    text-align: center;
+    color: #fff;
+}
+
+.violation_list {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    background-color: rgb(40, 39, 39);
+    color: #fff;
+}
+
+.violation_list a {
+    color: white;
+    text-decoration: underline;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#hidden-dropdown {
+    display: none;
+    margin: auto;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;  /* Ensures button appears inline like an input */
+    text-align: center;  /* Aligns text properly inside the button */
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.form .quit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: auto;
+    float: right;
+}

@@ -1,0 +1,452 @@
+/* main.css */
+@import url('styles.css');
+
+/* Profile Section */
+.profile-section {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: space-evenly;
+    align-items: start;
+    padding: 20px;
+    margin-left: 25%;
+    margin-right: 10%;
+    transition: margin-left 0.3s ease;
+    border-bottom: 1px solid grey;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 180px;
+}
+
+.profile-details:hover p {
+    opacity: 0.5; /* Reduce opacity of the text to 50% */
+}
+
+.profile-details p {
+    margin: 5px 0;
+    font-size: 16px;
+    transition: opacity 0.3s ease; /* Smooth transition for opacity */
+}
+
+#username {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.profile-details p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.dashboard-container {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .calorie-meter {
+    flex: 1;
+    max-width: 300px;
+  }
+  
+  .meter-card {
+    background: #1E1E1E;
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .calories-text {
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .label-text {
+    opacity: 0.7;
+  }
+  
+  .calories-label {
+    margin-top: 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  
+  .progress {
+    transition: stroke-dashoffset 1s ease-in-out;
+    stroke-linecap: round;
+  }
+  
+  .daily-meals-container {
+    flex: 2;
+    background: #1E1E1E;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .daily-meals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .daily-meals-header h2 {
+    margin: 0;
+  }
+  
+  .daily-meals-header .add-meal-btn {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .meals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Enable scrolling if needed */
+    padding-right: 10px; /* Space for scrollbar */
+  }
+
+.meals-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .meals-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  .meals-list::-webkit-scrollbar-thumb {
+    background: rgba(76, 175, 80, 0.5);
+    border-radius: 4px;
+  }
+  
+  .meals-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(76, 175, 80, 0.7);
+  }
+  
+  .meal-card {
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 10px;
+    padding: 0.5rem;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    position: relative;
+    transition: all 0.2s ease;
+    max-height: 100px;
+  }
+  
+  .meal-card:hover {
+    transform: translateY(-2px);
+    background: rgba(76, 175, 80, 0.15);
+  }
+  
+  .meal-title {
+    color: #4CAF50;
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .meal-ingredients {
+    color: #fff;
+    opacity: 0.8;
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+  }
+  
+  .meal-calories {
+    color: #4CAF50;
+    font-weight: bold;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.8rem;
+  }
+  
+  .empty-meals-message {
+    color: #888;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  /* Compact view for lists with more than 3 items */
+.meals-list.compact-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  /* Compact cards (after first 3 entries) */
+  .meal-card.compact-card {
+    padding: 0.75rem;
+    font-size: 0.9em;
+  }
+  
+  .meal-card.compact-card .meal-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .meal-card.compact-card .meal-ingredients {
+    font-size: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .meal-card.compact-card .meal-calories {
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+
+  .meal-card.compact-card:hover {
+    transform: translateY(-1px);
+  }
+  
+  .add-meal-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .add-meal-btn:hover {
+    background: #45a049;
+  }
+
+  /* Styles for Tabs */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tab {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    background-color: #45a049;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+}
+
+.tab.active {
+    border-bottom: 5px solid #333; /* Line below active tab */
+    color: #333;
+    font-weight: bold;
+}
+
+/* Food Posts Flex Styles */
+.food-posts-container {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+    text-align: center;
+}
+
+.food-posts-container h2 {
+    margin-bottom: 1rem;
+    font-size: 24px;
+    color: #fff;
+}
+
+.food-posts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 200px;
+    position: relative;
+    margin-left: 10%;
+    margin-right: 10%
+}
+
+.food-post {
+    flex: 0 0 calc(33.333% - 1rem); /* Adjust the percentage to control the number of items per row */
+    max-width: calc(33.333% - 1rem);
+    max-height: 250px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    background-color: #fff;
+    opacity: 0; /* Start with the post invisible */
+    transform: scale(0.9); /* Slightly scale down */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Fade and scale up */
+}
+
+.food-post.show {
+    opacity: 1;
+    transform: scale(1); /* Scale to original size */
+}
+
+.food-post:hover {
+    transform: scale(1.05);
+}
+
+.food-post img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-posts-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    color: #777;
+}
+
+.add-post-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.add-post-btn:hover {
+    background-color: #45a049;
+}
+
+.sidebar{
+    border-right: 1px solid grey;
+}
+
+.modal{
+    display: none;
+    z-index: 1000;
+}
+
+.modal-content h2 {
+    color: #41A317; /* Title color */
+}
+
+.modal-content input {
+    margin-bottom: 10px; /* Spacing between inputs */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #444;
+    color: white;
+}
+
+.modal-content button {
+    padding: 10px;
+    background-color: #41A317;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-section, .food-posts-container {
+        margin-left: 0;
+        padding: 1rem;
+        justify-content: center;
+    }
+
+    .profile-section {
+        grid-template-columns: 1fr;
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+
+    .profile-info{
+        align-self: center;
+        justify-content: center;
+    }
+
+    .food-post {
+        flex: 0 0 calc(50% - 0.5rem);
+        max-width: calc(50% - 0.5rem);
+        margin: 0 auto;
+    }
+    .dashboard-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    
+      .calorie-meter {
+        max-width: 100%;
+      }
+
+      .meals-list.compact-view {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+}
+
+@media (max-width: 480px) {
+    .food-post {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .meals-list.compact-view {
+        grid-template-columns: 1fr;
+      }
+
+    .meal-card.compact-card {
+        font-size: 1em;
+        padding: 1rem;
+    }
+}
+
+.tooltip {
+    position: absolute;
+    display: none;
+    background-color: #333;
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+  }
